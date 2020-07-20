@@ -56,5 +56,4 @@ public class NewsListAdapter extends BaseAdapter {
         //returns the new view
         return newView;
     }
-
 }
