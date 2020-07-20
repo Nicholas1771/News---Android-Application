@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-
+//Milestone 1
 //Temporary activity please do not consider this an activity for the requirements
 public class MainActivity extends AppCompatActivity {
 
