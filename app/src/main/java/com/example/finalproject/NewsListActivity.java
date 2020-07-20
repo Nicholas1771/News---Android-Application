@@ -1,11 +1,14 @@
 package com.example.finalproject;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +17,12 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -180,37 +189,126 @@ public class NewsListActivity extends AppCompatActivity {
         allArticles = new ArrayList<>();
         //Manually add articles for now
         //TODO pull articles from http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml instead of manually creating them
-        allArticles.add(new Article(
-                "Naya Rivera: Police identify body as missing Glee star",
-                "The actress went missing on Wednesday after going boating with her son at a lake in California.",
-                "2020-07-13",
-                "https://www.bbc.co.uk/news/entertainment-arts-53397318"));
-        allArticles.add(new Article("Coronavirus: White House targets US disease chief Dr Anthony Fauci",
-                "A memo leaked over the weekend said several officials were \"concerned\" by Dr Fauci's past comments.",
-                "2020-07-13",
-                "https://www.bbc.co.uk/news/world-us-canada-53392817"));
-        allArticles.add(new Article("Trudeau admits 'mistake' while facing third ethics inquiry in office",
-                "Canada PM says he should have recused himself from contract talks with charity that paid his family.",
-                "2020-07-13",
-                "https://www.bbc.co.uk/news/world-us-canada-53394272"));
-        allArticles.add(new Article("Roger Stone: President Trump's clemency wipes fine and supervised release",
-                "The president's former adviser was due to begin a prison term on 14 July after lying to Congress.",
-                "2020-07-13",
-                "https://www.bbc.co.uk/news/world-us-canada-53398575"));
-        allArticles.add(new Article("South China Sea dispute: China's pursuit of resources 'unlawful', says US",
-                "Secretary of State Mike Pompeo says China is treating the disputed waters as its \"maritime empire\".",
-                "2020-07-13",
-                "https://www.bbc.co.uk/news/world-us-canada-53397673"));
-        allArticles.add(new Article("Washington Redskins to drop controversial team name following review",
-                "The Washington team's decision follows a wave of calls to scrap the name long-criticised as racist.",
-                "2020-07-13",
-                "https://www.bbc.co.uk/news/world-us-canada-53390944"));
-        allArticles.add(new Article("Daniel Lewis Lee: US judge delays first federal execution in 17 years",
-                "The execution of Daniel Lewis Lee in Indiana is stopped just hours before it was due to go ahead.",
-                "2020-07-13",
-                "https://www.bbc.co.uk/news/world-us-canada-53385642"));
-
+        new ArticleQuery().execute();
         //List View object for the list view from news_list.xml
         updateArticles();
+    }
+    //Async class for making a query
+    private class ArticleQuery extends AsyncTask<String, Integer, String> {
+
+        //articles pulled from the xml page
+        ArrayList<Article> articles = new ArrayList<>();
+
+        @Override
+        protected String doInBackground(String... args) {
+
+            try {
+                //url where we get the articles from
+                URL url = new URL("http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml");
+
+                //url connection
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                //input stream
+                InputStream response = urlConnection.getInputStream();
+
+                //Sets up the xml pull parse factory and pull parser
+                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                factory.setNamespaceAware(false);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setInput(response, "UTF-8");
+
+                //declare and initialize eventType
+                int eventType = xpp.getEventType();
+
+                //true if currently inside an article item
+                boolean insideItem = false;
+
+                //Temporary variables to store article information
+                String title = "";
+                String description = "";
+                String date = "";
+                String link = "";
+
+                // looping document to extract title, description, link, date
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+
+                    //At a start tag
+                    if (eventType == XmlPullParser.START_TAG) {
+
+                        if (xpp.getName().equalsIgnoreCase("item")) {
+                            //At the start of an article item, set inside item to true
+                            insideItem = true;
+                        }
+
+                        //If were inside an article item, check whether were on the title, desc, date or link
+                        if (insideItem) {
+                            if (xpp.getName().equalsIgnoreCase("title")) {
+                                //At the title tag, save title text to temp variable
+                                title = xpp.nextText();
+                            } else if (xpp.getName().equalsIgnoreCase("description")) {
+                                //At the description tag, save description text to temp variable
+                                description = xpp.nextText();
+                            } else if (xpp.getName().equalsIgnoreCase("pubDate")) {
+                                //At the date tag, save text to temp variable
+                                date = xpp.nextText();
+                            } else if (xpp.getName().equalsIgnoreCase("link")) {
+                                //At the link tag, save text to temp variable
+                                link = xpp.nextText();
+                            }
+                        }
+                    }
+
+                    if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
+                        //At the end of an article item set inside item to false
+                        insideItem = false;
+
+                        //Add the temp variables together to create a new Article object
+                        articles.add(new Article(title, description, date, link));
+
+                        //Publish progress to the progress bar (1 percent for every article)
+                        publishProgress(articles.size());
+                    }
+
+                    //Go to next
+                    eventType = xpp.next();
+
+                }
+                //Done getting articles publish progress to 100 percent
+                publishProgress(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return "Done";
+        }
+
+        @Override
+        protected void onProgressUpdate (Integer... values) {
+
+            //Get the progress bar
+            final ProgressBar progressBar = findViewById(R.id.progressBar);
+
+            //Make the progress bar visible
+            progressBar.setVisibility(View.VISIBLE);
+
+            //Set the progress
+            progressBar.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //Done getting all articles
+
+            //add new articles to allArticle array list
+            allArticles.addAll(articles);
+
+            //Update the articles
+            updateArticles();
+
+            //Make progress bar invisible
+            final ProgressBar progressBar = findViewById(R.id.progressBar);
+            progressBar.setVisibility(View.INVISIBLE);
+        }
     }
 }
