@@ -15,11 +15,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Button used to go to news list activity
-        Button button = findViewById(R.id.button);
+        Button button = findViewById(R.id.button1);
+
+        Button button2 = findViewById(R.id.button2);
 
         //On click listener for button gos to the news list activity when triggered
         button.setOnClickListener(v -> {
             Intent newsListActivity = new Intent(MainActivity.this, NewsListActivity.class);
+            startActivity(newsListActivity);
+        });
+
+        button2.setOnClickListener(v -> {
+            Intent newsListActivity = new Intent(MainActivity.this, ProfileActiviy.class);
             startActivity(newsListActivity);
         });
     }

@@ -4,13 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/button1"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:text="GO TO NEWS LIST ACTIVITY (temporary button)"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:text="GO TO PROFILE ACTIVITY (temporary button)"
         tools:ignore="HardcodedText" />
 </LinearLayout>
