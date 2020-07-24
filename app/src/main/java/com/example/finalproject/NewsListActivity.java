@@ -26,8 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class NewsListActivity extends AppCompatActivity {
-
+public class NewsListActivity extends BaseActivity {
     //All articles
     private ArrayList<Article> allArticles;
 
@@ -36,6 +35,11 @@ public class NewsListActivity extends AppCompatActivity {
 
     //Listview that stores the articles
     ListView newsArticleList;
+
+    @Override
+    public int getLayoutResource() {
+        return R.layout.news_list;
+    }
 
     //This method takes a string search term and searches through the articles, it returns a list of articles that are matching
     private void searchArticles(String searchText) {
@@ -185,6 +189,8 @@ public class NewsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_list);
 
+        displayToolbar();
+        setTitle("News");
         //initialize the articles
         allArticles = new ArrayList<>();
         //Manually add articles for now

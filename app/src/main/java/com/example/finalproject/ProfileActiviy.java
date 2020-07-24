@@ -1,6 +1,7 @@
 package com.example.finalproject;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,7 +16,7 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
-public class ProfileActiviy extends AppCompatActivity {
+public class ProfileActiviy extends BaseActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -27,6 +28,9 @@ public class ProfileActiviy extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_activiy);
+
+        displayToolbar();
+        setTitle("Profile");
 
         final ImageButton pictureButton = findViewById(R.id.picture_button);
 
@@ -49,6 +53,11 @@ public class ProfileActiviy extends AppCompatActivity {
             String email = emailEditText.getText().toString();
             //TO-DO save the data as shared preference
         });
+    }
+
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_profile_activiy;
     }
 
     private void dispatchTakePictureIntent() {
