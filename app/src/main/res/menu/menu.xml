@@ -6,25 +6,25 @@
 
         <item
             android:id="@+id/nav_profile"
-            android:title="Profile"
+            android:title="@string/profile"
             app:showAsAction="always"
             android:icon="@drawable/profile_icon"/>
 
         <item
             android:id="@+id/nav_news"
-            android:title="News"
+            android:title="@string/news"
             app:showAsAction="always"
             android:icon="@drawable/news_icon"/>
 
         <item
             android:id="@+id/nav_favourites"
-            android:title="Favourites"
+            android:title="@string/favourites"
             app:showAsAction="always"
             android:icon="@drawable/favourites_icon"/>
 
         <item
             android:id="@+id/nav_settings"
-            android:title="Settings"
+            android:title="@string/settings"
             app:showAsAction="always"
             android:icon="@drawable/settings_icon"/>
 

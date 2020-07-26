@@ -38,6 +38,12 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        menuItemSelected(item);
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    public void menuItemSelected (MenuItem item) {
         Intent intent;
         switch (item.getItemId()) {
             case R.id.nav_profile:
@@ -50,9 +56,16 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
                 break;
+            case R.id.nav_favourites:
+                intent = new Intent(BaseActivity.this, FavouritesActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+                break;
+            case R.id.nav_settings:
+                intent = new Intent(BaseActivity.this, SettingsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
         }
-        drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     void setUpNav () {
@@ -99,20 +112,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
-        switch (item.getItemId()) {
-            case R.id.nav_profile:
-                intent = new Intent(BaseActivity.this, ProfileActiviy.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-                break;
-            case R.id.nav_news:
-                intent = new Intent(BaseActivity.this, NewsListActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-                break;
-        }
-
+        menuItemSelected(item);
         return super.onOptionsItemSelected(item);
     }
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SettingsActivity">
+
+    <include layout="@layout/toolbar_layout" />
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/delete_search_button"
+                android:text="@string/delete_search_history"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/about_button"
+                android:text="@string/about"
+                android:layout_below="@+id/delete_search_button"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/feedback_label"
+                android:labelFor="@+id/feedback_edit_text"
+                android:layout_above="@+id/feedback_edit_text"
+                android:contentDescription="@string/label_for_feedback"
+                android:text="@string/send_feedback"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/feedback_edit_text"
+                android:inputType="text"
+                android:layout_above="@id/send_button"
+                android:autofillHints="feedback" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/send_button"
+                android:text="@string/send"
+                android:layout_alignParentBottom="true"/>
+
+        </RelativeLayout>
+
+        <include layout="@layout/nav_drawer_layout" />
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+</LinearLayout>
