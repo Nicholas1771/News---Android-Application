@@ -2,6 +2,7 @@ package com.example.finalproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -31,6 +32,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     @Override
     protected void onPostCreate (Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        Log.i("test", "test");
         setUpNav();
     }
 
@@ -55,6 +57,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
     void setUpNav () {
         drawerLayout = findViewById(R.id.drawer_layout);
+
+        toolbar = findViewById(R.id.toolbar);
 
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
 
@@ -82,6 +86,15 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            this.drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

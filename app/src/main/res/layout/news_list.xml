@@ -7,6 +7,8 @@
     android:orientation="vertical"
     tools:context=".NewsListActivity">
 
+    <include layout="@layout/toolbar_layout" />
+
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
@@ -16,13 +18,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <include layout="@layout/toolbar_layout" />
-
             <LinearLayout
                 android:id="@+id/search_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/toolbar"
                 android:orientation="horizontal">
 
                 <EditText
