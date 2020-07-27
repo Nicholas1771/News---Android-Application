@@ -28,6 +28,13 @@
             app:showAsAction="always"
             android:icon="@drawable/settings_icon"/>
 
+        <item
+            android:id="@+id/help_settings"
+            android:title="Help"
+            app:showAsAction="always" />
+
+
+
     </group>
 
 </menu>

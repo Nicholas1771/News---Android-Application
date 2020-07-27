@@ -1,6 +1,10 @@
 package com.example.finalproject;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -10,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar;
 public class SettingsActivity extends BaseActivity {
 
     Button delete_search_button, about_button, send_button;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +34,7 @@ public class SettingsActivity extends BaseActivity {
                 showSnackbar();
             }
         });
+
     }
 
     // snackbar for the delete button
@@ -46,6 +52,32 @@ public class SettingsActivity extends BaseActivity {
     protected int getLayoutResource() {
         return R.layout.activity_settings;
     }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.help_settings:
+              AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+              builder.setTitle("Help")
+                      .setMessage("Delete your search history or click the About Button")
+                      .setPositiveButton("OK", (dialog, which) -> SettingsActivity.super.onBackPressed())
+                      .setNegativeButton("Cancel", null);
+
+              AlertDialog alert = builder.create();
+              alert.show();
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+
+
+
+
+
 
 
 }
