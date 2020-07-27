@@ -65,6 +65,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
                 intent = new Intent(BaseActivity.this, SettingsActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
+                break;
         }
     }
 
