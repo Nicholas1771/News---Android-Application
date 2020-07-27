@@ -31,6 +31,7 @@ public class SettingsActivity extends BaseActivity {
         });
     }
 
+    // snackbar for the delete button
     private void showSnackbar() {
         Snackbar.make(delete_search_button, "Do you want to delete the search history?" , Snackbar.LENGTH_LONG)
                 .setAction("Delete", new View.OnClickListener() {
