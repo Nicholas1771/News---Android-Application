@@ -1,44 +1,33 @@
 package com.example.finalproject;
 
-import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
-import android.view.View;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class NewsListActivity extends BaseActivity {
+public class FavouritesActivity extends BaseActivity {
     //All articles
     private ArrayList<Article> allArticles;
 
     //List of articles that are not hidden
     private ArrayList<Article> unHiddenArticles;
 
-    private Database database;
-
     //Listview that stores the articles
     ListView newsArticleList;
+
+    Database database;
 
     @Override
     public int getLayoutResource() {
@@ -90,7 +79,7 @@ public class NewsListActivity extends BaseActivity {
     }
 
     //This loops through all articles and returns a list of unhidden articles
-    private ArrayList<Article> getUnhiddenArticles () {
+    private ArrayList<Article> getUnhiddenArticles() {
 
         //list to be returned
         ArrayList<Article> unhiddenArticles = new ArrayList<>();
@@ -112,19 +101,8 @@ public class NewsListActivity extends BaseActivity {
         return unhiddenArticles;
     }
 
-    private boolean addArticleToFavourites (Article article) {
-        if (database.hasArticle(article)) {
-            Log.i("false", "false");
-            return false;
-        } else {
-            database.insertArticle(article);
-            Log.i("true", "true");
-            return true;
-        }
-    }
-
     //This method takes an arraylist of articles and initialized the articles and displays them
-    private void updateArticles () {
+    private void updateArticles() {
 
         //Updates the unhidden articles
         unHiddenArticles = getUnhiddenArticles();
@@ -142,7 +120,7 @@ public class NewsListActivity extends BaseActivity {
             Article clickedArticle = unHiddenArticles.get(position);
 
             //builder for an alert
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NewsListActivity.this);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FavouritesActivity.this);
 
             //Link to article
             String link = clickedArticle.getLinkToArticle();
@@ -153,7 +131,7 @@ public class NewsListActivity extends BaseActivity {
                             + "<br><br>Description: " + clickedArticle.getDescription()
                             + "<br><br>Date: " + clickedArticle.getDate()
                             + "<br><br>Link: <a href=\"" + link + "\">" + link + "</a>"))
-                    .setPositiveButton("Add to favourites", (dialog, which) -> addArticleToFavourites(clickedArticle));
+                    .setPositiveButton("Remove from favourites", (dialog, which) -> removeFavourite(clickedArticle));
             AlertDialog alert = alertDialogBuilder.create();
             alert.show();
 
@@ -200,139 +178,26 @@ public class NewsListActivity extends BaseActivity {
         });
     }
 
+    public void removeFavourite (Article article) {
+        String link = article.getLinkToArticle();
+        database.removeArticle(link);
+        allArticles = database.getFavouriteArticles();
+        updateArticles();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_list);
 
-        database = new Database(this);
-
         displayToolbar();
-        setTitle("News");
+        setTitle("Favourites");
         //initialize the articles
         allArticles = new ArrayList<>();
-        //Manually add articles for now
-        //TODO pull articles from http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml instead of manually creating them
-        new ArticleQuery().execute();
-        //List View object for the list view from news_list.xml
+
+        database = new Database(this);
+        allArticles = database.getFavouriteArticles();
+
         updateArticles();
-    }
-    //Async class for making a query
-    private class ArticleQuery extends AsyncTask<String, Integer, String> {
-
-        //articles pulled from the xml page
-        ArrayList<Article> articles = new ArrayList<>();
-
-        @Override
-        protected String doInBackground(String... args) {
-
-            try {
-                //url where we get the articles from
-                URL url = new URL("http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml");
-
-                //url connection
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-                //input stream
-                InputStream response = urlConnection.getInputStream();
-
-                //Sets up the xml pull parse factory and pull parser
-                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-                factory.setNamespaceAware(false);
-                XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(response, "UTF-8");
-
-                //declare and initialize eventType
-                int eventType = xpp.getEventType();
-
-                //true if currently inside an article item
-                boolean insideItem = false;
-
-                //Temporary variables to store article information
-                String title = "";
-                String description = "";
-                String date = "";
-                String link = "";
-
-                // looping document to extract title, description, link, date
-                while (eventType != XmlPullParser.END_DOCUMENT) {
-
-                    //At a start tag
-                    if (eventType == XmlPullParser.START_TAG) {
-
-                        if (xpp.getName().equalsIgnoreCase("item")) {
-                            //At the start of an article item, set inside item to true
-                            insideItem = true;
-                        }
-
-                        //If were inside an article item, check whether were on the title, desc, date or link
-                        if (insideItem) {
-                            if (xpp.getName().equalsIgnoreCase("title")) {
-                                //At the title tag, save title text to temp variable
-                                title = xpp.nextText();
-                            } else if (xpp.getName().equalsIgnoreCase("description")) {
-                                //At the description tag, save description text to temp variable
-                                description = xpp.nextText();
-                            } else if (xpp.getName().equalsIgnoreCase("pubDate")) {
-                                //At the date tag, save text to temp variable
-                                date = xpp.nextText();
-                            } else if (xpp.getName().equalsIgnoreCase("link")) {
-                                //At the link tag, save text to temp variable
-                                link = xpp.nextText();
-                            }
-                        }
-                    }
-
-                    if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
-                        //At the end of an article item set inside item to false
-                        insideItem = false;
-
-                        //Add the temp variables together to create a new Article object
-                        articles.add(new Article(title, description, date, link));
-
-                        //Publish progress to the progress bar (1 percent for every article)
-                        publishProgress(articles.size());
-                    }
-
-                    //Go to next
-                    eventType = xpp.next();
-
-                }
-                //Done getting articles publish progress to 100 percent
-                publishProgress(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return "Done";
-        }
-
-        @Override
-        protected void onProgressUpdate (Integer... values) {
-
-            //Get the progress bar
-            final ProgressBar progressBar = findViewById(R.id.progressBar);
-
-            //Make the progress bar visible
-            progressBar.setVisibility(View.VISIBLE);
-
-            //Set the progress
-            progressBar.setProgress(values[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            //Done getting all articles
-
-            //add new articles to allArticle array list
-            allArticles.addAll(articles);
-
-            //Update the articles
-            updateArticles();
-
-            //Make progress bar invisible
-            final ProgressBar progressBar = findViewById(R.id.progressBar);
-            progressBar.setVisibility(View.INVISIBLE);
-        }
     }
 }
