@@ -15,8 +15,15 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:id="@+id/background_image_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <ImageButton
                 android:id="@+id/picture_button"
@@ -24,6 +31,7 @@
                 android:layout_height="200dp"
                 android:layout_centerHorizontal="true"
                 android:contentDescription="@string/profile_picture_cont_desc"
+                android:layout_below="@id/progressBar"
                 android:src="@android:drawable/picture_frame" />
 
             <TextView
