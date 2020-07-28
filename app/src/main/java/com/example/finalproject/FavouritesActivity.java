@@ -200,6 +200,7 @@ public class FavouritesActivity extends BaseActivity {
         });
     }
 
+    // this method removes the favourite Article passed through
     public void removeFavourite (Article article) {
         String link = article.getLinkToArticle();
         database.removeArticle(link);
@@ -242,7 +243,8 @@ public class FavouritesActivity extends BaseActivity {
 
         }
     }
-  
+
+
     private void showAlert () {
         LayoutInflater factory = LayoutInflater.from(FavouritesActivity.this);
         final View view = factory.inflate(R.layout.alert_dialogue_image, null);
@@ -271,6 +273,7 @@ public class FavouritesActivity extends BaseActivity {
 
     private class ImageQuery extends AsyncTask<String, Integer, String> {
 
+        // access key for API
         private final String ACCESS_KEY = "8Rb5ana9LDe_4_n78eZ_gciKw-HURz34SSdLKjoD-kM";
 
         @Override

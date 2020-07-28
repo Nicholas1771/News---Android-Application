@@ -35,6 +35,7 @@ import java.net.URL;
 
 public class SettingsActivity extends BaseActivity {
 
+    // delete, about and send button
     Button delete_search_button, about_button, send_button;
 
 
@@ -50,6 +51,7 @@ public class SettingsActivity extends BaseActivity {
         about_button = (Button) findViewById((R.id.about_button));
         send_button = (Button) findViewById((R.id.send_button));
 
+        // click listener for delete search history button
         delete_search_button.setOnClickListener(v -> showSnackbar());
 
         // Forecast query
@@ -75,6 +77,7 @@ public class SettingsActivity extends BaseActivity {
 
         switch (item.getItemId()) {
 
+            // when user clicks help menu
             case R.id.help_settings:
               AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
               builder.setTitle("Help")
@@ -90,8 +93,11 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 
+    // ASync task for weather api
+
     private class ForecastQuery extends AsyncTask<String, Integer, String> {
 
+        // Strings fpr temperature and bitMap
         private String UVRating;
         private String minTemp;
         private String maxTemp;
@@ -113,14 +119,14 @@ public class SettingsActivity extends BaseActivity {
                 InputStream response = urlConnection.getInputStream();
 
 
-                //From part 3: slide 19
+
                 XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
                 xpp.setInput(response, "UTF-8");
 
 
-                //From part 3, slide 20
+
                 String parameter = null;
 
                 int eventType = xpp.getEventType(); //The parser is currently at START_DOCUMENT
@@ -198,6 +204,7 @@ public class SettingsActivity extends BaseActivity {
             return "Done";
         }
 
+        // this method checks if file exists
         public boolean fileExistance (String fname){
             Log.i("file", "Looking for file with name: " + fname);
             File file = getBaseContext().getFileStreamPath(fname);
@@ -208,13 +215,17 @@ public class SettingsActivity extends BaseActivity {
         protected void onProgressUpdate (Integer... values) {
             final ProgressBar progressBar = findViewById(R.id.progressBar);
 
+            //Make the progress bar visible
             progressBar.setVisibility(View.VISIBLE);
 
+            //Set the progress
             progressBar.setProgress(values[0]);
         }
 
         @Override
         protected void onPostExecute (String result) {
+
+            // grabs progressBar, temperatures, uv rating and weather image
             final ProgressBar progressBar = findViewById(R.id.progressBar);
             final TextView currentTemp = findViewById(R.id.currentTemp);
             final TextView maxTemp = findViewById(R.id.maxTemp);
@@ -222,11 +233,14 @@ public class SettingsActivity extends BaseActivity {
             final TextView uvRating = findViewById(R.id.UVRating);
             final ImageView weatherImage = findViewById(R.id.weatherImage);
 
+            // sets the text for weather and image
             currentTemp.setText("Current Temperature: " + this.currentTemp);
             maxTemp.setText("Maximum Temperature: " + this.maxTemp);
             minTemp.setText("Minimum Temperature: " + this.minTemp);
             uvRating.setText("UV Rating: " + this.UVRating);
             weatherImage.setImageBitmap(bitmap);
+
+            // sets the progress bar to invisible
             progressBar.setVisibility(View.INVISIBLE);
         }
     }

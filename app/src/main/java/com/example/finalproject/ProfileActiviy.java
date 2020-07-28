@@ -63,12 +63,15 @@ public class ProfileActiviy extends BaseActivity {
 
         final Button saveButton = findViewById(R.id.save_button);
 
+        // click listener for the Save button
         saveButton.setOnClickListener(v -> {
 
+            // toast message for save
             String toastMessage = "Saved profile picture (Fake message - data will be saved in milestone 3)";
             int duration = Toast.LENGTH_SHORT;
             Toast.makeText(getApplicationContext(), toastMessage, duration).show();
 
+            // grabs the firstName,lastName, and email text from user
             String firstName = firstNameEditText.getText().toString();
             String lastName = lastNameEditText.getText().toString();
             String email = emailEditText.getText().toString();
@@ -76,6 +79,7 @@ public class ProfileActiviy extends BaseActivity {
         });
     }
 
+    // this method sets the background image
     public void updateBackgroundImage () {
         backgroundImageContainer.setBackground(new BitmapDrawable(getApplicationContext().getResources(), image));
     }
@@ -191,6 +195,7 @@ public class ProfileActiviy extends BaseActivity {
 
         switch (item.getItemId()) {
 
+            // when user clicks help menu
             case R.id.help_settings:
                 AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActiviy.this);
                 builder.setTitle("Help")

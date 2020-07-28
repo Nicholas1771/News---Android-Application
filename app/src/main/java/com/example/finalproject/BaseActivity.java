@@ -18,12 +18,13 @@ import com.google.android.material.navigation.NavigationView;
 
 public abstract class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    // toolbar, drawer layout, navigation view and toggle
     private Toolbar toolbar;
-
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private ActionBarDrawerToggle toggle;
 
+    // displays toolbar
     void displayToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -42,6 +43,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    // switch statements for each menu item with intents
 
     public void menuItemSelected (MenuItem item) {
         Intent intent;
@@ -69,6 +72,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         }
     }
 
+    // method sets up Navigation Drawer
+
     void setUpNav () {
         drawerLayout = findViewById(R.id.drawer_layout);
 
@@ -90,6 +95,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         setUpNav();
     }
 
+    // setter for Title
     private void setTitle(String title) {
         toolbar.setTitle(title);
     }
