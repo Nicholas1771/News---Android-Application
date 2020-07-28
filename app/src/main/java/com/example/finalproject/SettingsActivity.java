@@ -50,33 +50,20 @@ public class SettingsActivity extends BaseActivity {
         about_button = (Button) findViewById((R.id.about_button));
         send_button = (Button) findViewById((R.id.send_button));
 
-        delete_search_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showSnackbar();
-            }
-        });
+        delete_search_button.setOnClickListener(v -> showSnackbar());
 
         // Forecast query
         final ProgressBar progressBar = findViewById(R.id.progressBar_settings);
         progressBar.setVisibility(View.VISIBLE);
 
         ForecastQuery obj = new ForecastQuery();
-        obj.execute();
-
-
-
+        //obj.execute();
     }
 
     // snackbar for the delete button
     private void showSnackbar() {
         Snackbar.make(delete_search_button, "Do you want to delete the search history?" , Snackbar.LENGTH_LONG)
-                .setAction("Delete", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(SettingsActivity.this, "Search history has been deleted", Toast.LENGTH_SHORT).show();
-                    }
-                }).show();
+                .setAction("Delete", v -> Toast.makeText(SettingsActivity.this, "Search history has been deleted", Toast.LENGTH_SHORT).show()).show();
     }
 
     @Override
@@ -92,8 +79,7 @@ public class SettingsActivity extends BaseActivity {
               AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
               builder.setTitle("Help")
                       .setMessage("Delete your search history or click the About Button")
-                      .setPositiveButton("OK", (dialog, which) -> SettingsActivity.super.onBackPressed())
-                      .setNegativeButton("Cancel", null);
+                      .setPositiveButton("OK", null);
 
               AlertDialog alert = builder.create();
               alert.show();

@@ -346,8 +346,7 @@ public class NewsListActivity extends BaseActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(NewsListActivity.this);
                 builder.setTitle("Help")
                         .setMessage("Enter article and press search")
-                        .setPositiveButton("OK", (dialog, which) -> NewsListActivity.super.onBackPressed())
-                        .setNegativeButton("Cancel", null);
+                        .setPositiveButton("OK", null);
 
                 AlertDialog alert = builder.create();
                 alert.show();

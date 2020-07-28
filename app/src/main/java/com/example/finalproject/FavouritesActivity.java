@@ -41,7 +41,6 @@ import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import android.app.AlertDialog;
 
 public class FavouritesActivity extends BaseActivity {
     //All articles
@@ -233,8 +232,7 @@ public class FavouritesActivity extends BaseActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(FavouritesActivity.this);
                 builder.setTitle("Help")
                         .setMessage("Enter article and press search")
-                        .setPositiveButton("OK", (dialog, which) -> FavouritesActivity.super.onBackPressed())
-                        .setNegativeButton("Cancel", null);
+                        .setPositiveButton("OK", null);
 
                 AlertDialog alert = builder.create();
                 alert.show();

@@ -195,8 +195,7 @@ public class ProfileActiviy extends BaseActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActiviy.this);
                 builder.setTitle("Help")
                         .setMessage("Enter your information and press save at the bottom")
-                        .setPositiveButton("OK", (dialog, which) -> ProfileActiviy.super.onBackPressed())
-                        .setNegativeButton("Cancel", null);
+                        .setPositiveButton("OK", null);
 
                 AlertDialog alert = builder.create();
                 alert.show();
