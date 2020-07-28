@@ -72,9 +72,9 @@ public class ProfileActiviy extends BaseActivity {
             Toast.makeText(getApplicationContext(), toastMessage, duration).show();
 
             // grabs the firstName,lastName, and email text from user
-            String firstName = firstNameEditText.getText().toString();
-            String lastName = lastNameEditText.getText().toString();
-            String email = emailEditText.getText().toString();
+            //String firstName = firstNameEditText.getText().toString();
+            //String lastName = lastNameEditText.getText().toString();
+            //String email = emailEditText.getText().toString();
 
             //TO-DO save the data as shared preference
         });
