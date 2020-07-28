@@ -1,35 +1,18 @@
 package com.example.finalproject;
 
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.TextView;
-
 import com.google.android.material.snackbar.Snackbar;
-
-import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -37,6 +20,10 @@ public class SettingsActivity extends BaseActivity {
 
     Button delete_search_button, about_button, send_button;
 
+    ProgressBar progressBar;
+    TextView currentTempTextView;
+    TextView maxTempTextView;
+    TextView minTempTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,18 +33,23 @@ public class SettingsActivity extends BaseActivity {
         displayToolbar();
         setTitle("Settings");
 
-        delete_search_button = (Button)findViewById((R.id.delete_search_button));
-        about_button = (Button) findViewById((R.id.about_button));
-        send_button = (Button) findViewById((R.id.send_button));
+        delete_search_button = findViewById((R.id.delete_search_button));
+        about_button = findViewById((R.id.about_button));
+        send_button = findViewById((R.id.send_button));
 
         delete_search_button.setOnClickListener(v -> showSnackbar());
 
+        currentTempTextView = findViewById(R.id.currentTemp);
+        maxTempTextView = findViewById(R.id.maxTemp);
+        minTempTextView = findViewById(R.id.minTemp);
+
+
         // Forecast query
-        final ProgressBar progressBar = findViewById(R.id.progressBar_settings);
+        progressBar = findViewById(R.id.progressBar_settings);
         progressBar.setVisibility(View.VISIBLE);
 
         ForecastQuery obj = new ForecastQuery();
-        //obj.execute();
+        obj.execute();
     }
 
     // snackbar for the delete button
@@ -73,58 +65,40 @@ public class SettingsActivity extends BaseActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
+        if (item.getItemId() == R.id.help_settings) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+            builder.setTitle("Help")
+                    .setMessage("Delete your search history or click the About Button")
+                    .setPositiveButton("OK", null);
 
-            case R.id.help_settings:
-              AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-              builder.setTitle("Help")
-                      .setMessage("Delete your search history or click the About Button")
-                      .setPositiveButton("OK", null);
-
-              AlertDialog alert = builder.create();
-              alert.show();
-
-            default:
-                return super.onOptionsItemSelected(item);
-
+            AlertDialog alert = builder.create();
+            alert.show();
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private class ForecastQuery extends AsyncTask<String, Integer, String> {
 
-        private String UVRating;
         private String minTemp;
         private String maxTemp;
         private String currentTemp;
-        private Bitmap bitmap;
-        private String iconName;
 
         @Override
         protected String doInBackground(String... args) {
             try {
-
                 //create a URL object of what server to contact:
                 URL url = new URL("http://api.openweathermap.org/data/2.5/weather?q=ottawa,ca&APPID=7e943c97096a9784391a981c4d878b22&mode=xml&units=metric");
-
                 //open the connection
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
                 //wait for data:
                 InputStream response = urlConnection.getInputStream();
-
 
                 //From part 3: slide 19
                 XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
                 xpp.setInput(response, "UTF-8");
-
-
-                //From part 3, slide 20
-                String parameter = null;
-
                 int eventType = xpp.getEventType(); //The parser is currently at START_DOCUMENT
-
                 while (eventType != XmlPullParser.END_DOCUMENT) {
 
                     if (eventType == XmlPullParser.START_TAG) {
@@ -137,77 +111,19 @@ public class SettingsActivity extends BaseActivity {
                             publishProgress(50);
                             maxTemp = xpp.getAttributeValue(null, "max");
                             publishProgress(75);
-                        } else if (xpp.getName().equals("weather")) {
-                            iconName = xpp.getAttributeValue(null, "icon");
                         }
                     }
                     eventType = xpp.next(); //move to the next xml event and store it in a variable
                 }
-
-                if (fileExistance(iconName + ".png")) {
-                    Log.i("file", "file exists - reading from file");
-                    FileInputStream fis = null;
-                    try {
-                        fis = openFileInput(iconName + ".png");
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    bitmap = BitmapFactory.decodeStream(fis);
-                } else {
-                    Log.i("file", "file does not exist - downloading now");
-                    String urlString = "http://openweathermap.org/img/w/" + iconName + ".png";
-                    URL imageUrl = new URL(urlString);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.connect();
-                    int responseCode = connection.getResponseCode();
-                    if (responseCode == 200) {
-                        bitmap = BitmapFactory.decodeStream(connection.getInputStream());
-                        Log.i("uh oh", urlString);
-                    }
-                    FileOutputStream outputStream = openFileOutput( iconName + ".png", Context.MODE_PRIVATE);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
-                    outputStream.flush();
-                    outputStream.close();
-                }
-
                 publishProgress(100);
 
-                URL UVUrl = new URL("http://api.openweathermap.org/data/2.5/uvi?appid=7e943c97096a9784391a981c4d878b22&lat=45.348945&lon=-75.759389");
-
-                HttpURLConnection urlConnection2 = (HttpURLConnection) UVUrl.openConnection();
-
-                InputStream is = urlConnection2.getInputStream();
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
-                StringBuilder sb = new StringBuilder();
-                String line = null;
-                while ((line = reader.readLine()) != null)
-                {
-                    sb.append(line + "\n");
-                }
-                String result = sb.toString();
-
-                JSONObject jObject = new JSONObject(result);
-
-                UVRating = Double.toString(jObject.getDouble("value"));
-
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
+            } catch (Exception ignored) {
             }
-
             return "Done";
-        }
-
-        public boolean fileExistance (String fname){
-            Log.i("file", "Looking for file with name: " + fname);
-            File file = getBaseContext().getFileStreamPath(fname);
-            return file.exists();
         }
 
         @Override
         protected void onProgressUpdate (Integer... values) {
-            final ProgressBar progressBar = findViewById(R.id.progressBar);
-
             progressBar.setVisibility(View.VISIBLE);
 
             progressBar.setProgress(values[0]);
@@ -215,20 +131,10 @@ public class SettingsActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute (String result) {
-            final ProgressBar progressBar = findViewById(R.id.progressBar);
-            final TextView currentTemp = findViewById(R.id.currentTemp);
-            final TextView maxTemp = findViewById(R.id.maxTemp);
-            final TextView minTemp = findViewById(R.id.minTemp);
-            final TextView uvRating = findViewById(R.id.UVRating);
-            final ImageView weatherImage = findViewById(R.id.weatherImage);
-
-            currentTemp.setText("Current Temperature: " + this.currentTemp);
-            maxTemp.setText("Maximum Temperature: " + this.maxTemp);
-            minTemp.setText("Minimum Temperature: " + this.minTemp);
-            uvRating.setText("UV Rating: " + this.UVRating);
-            weatherImage.setImageBitmap(bitmap);
+            currentTempTextView.setText(getString(R.string.current_temperature) + currentTemp);
+            maxTempTextView.setText(getString(R.string.maximum_temperature) + maxTemp);
+            minTempTextView.setText(getString(R.string.minimum_temperature) + minTemp);
             progressBar.setVisibility(View.INVISIBLE);
         }
     }
-
 }

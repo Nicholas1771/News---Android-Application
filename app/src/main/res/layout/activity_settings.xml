@@ -46,26 +46,11 @@
                 android:text="@string/min_temp"
                 android:layout_below="@id/maxTemp" />
 
-            <TextView
-                android:id="@+id/UVRating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/uv_rating"
-                android:layout_below="@id/minTemp" />
-
-            <ImageView
-                android:id="@+id/weatherImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/UVRating" />
-
-
-
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/delete_search_button"
-                android:layout_below="@+id/weatherImage"
+                android:layout_below="@+id/minTemp"
                 android:text="@string/delete_search_history"/>
 
             <Button

@@ -8,19 +8,17 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-public class Database {
+class Database {
 
-    ArticlesDbHelper dbHelper;
+    private ArticlesDbHelper dbHelper;
 
-    SQLiteDatabase db;
+    private SQLiteDatabase db;
 
-    private final String ALL_FAVOURITE_ROWS_SQL = "select * from " + ArticlesContract.ArticlesEntry.TABLE_NAME + ";";
-
-    public Database (Context context) {
+    Database(Context context) {
         dbHelper = new ArticlesDbHelper(context);
     }
 
-    public boolean hasArticle (Article article) {
+    boolean hasArticle(Article article) {
 
         db = dbHelper.getReadableDatabase();
 
@@ -29,20 +27,22 @@ public class Database {
         Cursor cursor = db.rawQuery("select * from " + ArticlesContract.ArticlesEntry.TABLE_NAME + " where link='" + link + "';", null);
 
         if (cursor.getCount() == 0) {
+            cursor.close();
             return false;
         } else {
+            cursor.close();
             return true;
         }
     }
 
-    public void removeArticle (String link) {
+    void removeArticle(String link) {
         db = dbHelper.getWritableDatabase();
         String SQL = "delete from " + ArticlesContract.ArticlesEntry.TABLE_NAME + " where link='" + link + "';";
         db.execSQL(SQL);
         db.close();
     }
 
-    public void insertArticle (Article article) {
+    void insertArticle(Article article) {
         ContentValues values = new ContentValues();
 
         values.put(ArticlesContract.ArticlesEntry.COLUMN_NAME_TITLE, article.getTitle());
@@ -53,12 +53,13 @@ public class Database {
         db.insert(ArticlesContract.ArticlesEntry.TABLE_NAME, null, values);
     }
 
-    public ArrayList<Article> getFavouriteArticles () {
+    ArrayList<Article> getFavouriteArticles() {
 
         ArrayList<Article> favouriteArticles = new ArrayList<>();
 
         db = dbHelper.getReadableDatabase();
 
+        String ALL_FAVOURITE_ROWS_SQL = "select * from " + ArticlesContract.ArticlesEntry.TABLE_NAME + ";";
         Cursor cursor = db.rawQuery(ALL_FAVOURITE_ROWS_SQL, null);
 
         Log.i("test", "" + cursor.getCount());

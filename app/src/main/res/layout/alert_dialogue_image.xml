@@ -15,14 +15,15 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:id="@+id/alert_image"/>
+        android:id="@+id/alert_image"
+        android:contentDescription="@string/alert_image" />
 
     <TextView
         android:id="@+id/description_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:labelFor="@+id/description"
-        android:text="Description"
+        android:text="@string/description"
         android:background="#D9FFFFFF"
         android:textSize="24sp"/>
 
@@ -39,7 +40,7 @@
         android:layout_height="wrap_content"
         android:background="#D9FFFFFF"
         android:labelFor="@+id/date"
-        android:text="Date"
+        android:text="@string/date"
         android:textSize="24sp"/>
 
     <TextView
@@ -55,7 +56,7 @@
         android:layout_height="wrap_content"
         android:labelFor="@+id/link"
         android:background="#D9FFFFFF"
-        android:text="Link to article"
+        android:text="@string/link_to_article"
         android:textSize="24sp"/>
 
     <TextView
