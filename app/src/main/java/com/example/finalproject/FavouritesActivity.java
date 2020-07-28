@@ -1,19 +1,39 @@
 package com.example.finalproject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AlertDialog;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -28,6 +48,14 @@ public class FavouritesActivity extends BaseActivity {
     ListView newsArticleList;
 
     Database database;
+
+    ImageView imageView;
+
+    Bitmap image;
+
+    AlertDialog alert;
+
+    Article clickedArticle;
 
     @Override
     public int getLayoutResource() {
@@ -117,26 +145,15 @@ public class FavouritesActivity extends BaseActivity {
         newsArticleList.setOnItemClickListener((list, item, position, id) -> {
 
             //Gets the currently clicked Article object and saves it for use
-            Article clickedArticle = unHiddenArticles.get(position);
+            clickedArticle = unHiddenArticles.get(position);
 
-            //builder for an alert
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FavouritesActivity.this);
-
-            //Link to article
-            String link = clickedArticle.getLinkToArticle();
-
+            new ImageQuery().execute();
             //This alert opens when a news article title is clicked. It shows the articles title, description, date, and link
-            alertDialogBuilder.setTitle("Article Information")
-                    .setMessage(Html.fromHtml("Title: " + clickedArticle.getTitle()
-                            + "<br><br>Description: " + clickedArticle.getDescription()
-                            + "<br><br>Date: " + clickedArticle.getDate()
-                            + "<br><br>Link: <a href=\"" + link + "\">" + link + "</a>"))
-                    .setPositiveButton("Remove from favourites", (dialog, which) -> removeFavourite(clickedArticle));
-            AlertDialog alert = alertDialogBuilder.create();
-            alert.show();
+
+
 
             //Source from: https://essential-android.programming-books.io/alert-dialog-containing-a-clickable-link-9db7e0c7a32b4f84bb41150d06f418a9
-            ((TextView) Objects.requireNonNull(alert.findViewById(android.R.id.message))).setMovementMethod(LinkMovementMethod.getInstance());
+
         });
 
         //Runs on a long click of a news article, this will be used to show the snackbar to hide the article, or favourite the article
@@ -199,5 +216,104 @@ public class FavouritesActivity extends BaseActivity {
         allArticles = database.getFavouriteArticles();
 
         updateArticles();
+    }
+
+    private void showAlert () {
+        LayoutInflater factory = LayoutInflater.from(FavouritesActivity.this);
+        final View view = factory.inflate(R.layout.alert_dialogue_image, null);
+
+        imageView = view.findViewById(R.id.alert_image);
+        imageView.setImageBitmap(image);
+
+        TextView title = view.findViewById(R.id.title);
+        TextView description = view.findViewById(R.id.description);
+        TextView date = view.findViewById(R.id.date);
+        TextView link = view.findViewById(R.id.link);
+
+        title.setText(clickedArticle.getTitle());
+        description.setText(clickedArticle.getDescription());
+        date.setText(clickedArticle.getDate());
+        link.setText(Html.fromHtml("<a href=\"" + clickedArticle.getLinkToArticle() + "\">" + clickedArticle.getLinkToArticle()));
+        link.setMovementMethod(LinkMovementMethod.getInstance());
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FavouritesActivity.this);
+        alertDialogBuilder.setTitle("Article Information")
+                .setView(view)
+                .setPositiveButton("Remove from favourites", (dialog, which) -> removeFavourite(clickedArticle));
+        alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
+    private class ImageQuery extends AsyncTask<String, Integer, String> {
+
+        private final String ACCESS_KEY = "8Rb5ana9LDe_4_n78eZ_gciKw-HURz34SSdLKjoD-kM";
+
+        @Override
+        protected String doInBackground(String... args) {
+
+            try {
+                //url where we get the articles from
+                publishProgress(10);
+                String searchTerm = clickedArticle.getTitle().substring(clickedArticle.getTitle().lastIndexOf(" ")+1);
+                Log.i("test", searchTerm);
+                URL url = new URL("https://api.unsplash.com/search/photos?query=" + searchTerm + "&client_id=" + ACCESS_KEY);
+                //url connection
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                InputStream response = urlConnection.getInputStream();
+                //setProgress(10);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response, StandardCharsets.UTF_8));
+                publishProgress(20);
+                StringBuilder sb = new StringBuilder();
+                publishProgress(30);
+                String line;
+                publishProgress(40);
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+                JSONObject jObject = new JSONObject(sb.toString());
+                publishProgress(50);
+                JSONArray images = jObject.getJSONArray("results");
+                publishProgress(60);
+
+                JSONObject jImage = images.getJSONObject(0);
+
+                JSONObject urls = jImage.getJSONObject("urls");
+
+                URL imageURL = new URL(urls.getString("raw"));
+                publishProgress(70);
+                HttpURLConnection imageURLConnection = (HttpURLConnection) imageURL.openConnection();
+                publishProgress(80);
+                InputStream imageInputStream = imageURLConnection.getInputStream();
+                publishProgress(90);
+                image = BitmapFactory.decodeStream(imageInputStream);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            publishProgress(100);
+            return "Done";
+        }
+
+        @Override
+        protected void onProgressUpdate (Integer... values) {
+            //Get the progress bar
+            final ProgressBar progressBar = findViewById(R.id.progressBar);
+
+            //Make the progress bar visible
+            progressBar.setVisibility(View.VISIBLE);
+
+            //Set the progress
+            progressBar.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //Make progress bar invisible
+            final ProgressBar progressBar = findViewById(R.id.progressBar);
+            progressBar.setVisibility(View.INVISIBLE);
+            showAlert();
+        }
     }
 }
