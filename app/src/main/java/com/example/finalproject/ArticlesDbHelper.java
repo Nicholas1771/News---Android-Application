@@ -9,6 +9,7 @@ public class ArticlesDbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "NewsApp.db";
 
+    // create table sql query
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + ArticlesContract.ArticlesEntry.TABLE_NAME + " (" +
                     ArticlesContract.ArticlesEntry._ID + " INTEGER PRIMARY KEY," +
@@ -17,6 +18,7 @@ public class ArticlesDbHelper extends SQLiteOpenHelper {
                     ArticlesContract.ArticlesEntry.COLUMN_NAME_DATE + " DATE," +
                     ArticlesContract.ArticlesEntry.COLUMN_NAME_LINK + " TEXT)";
 
+    // drop table query
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + ArticlesContract.ArticlesEntry.TABLE_NAME;
 

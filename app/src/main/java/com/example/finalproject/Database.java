@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 class Database {
 
+  // ArticlesDBHelper object
     private ArticlesDbHelper dbHelper;
 
     private SQLiteDatabase db;
@@ -18,7 +19,8 @@ class Database {
         dbHelper = new ArticlesDbHelper(context);
     }
 
-    boolean hasArticle(Article article) {
+    // this method checks if Database has article
+    public boolean hasArticle (Article article) {
 
         db = dbHelper.getReadableDatabase();
 
@@ -35,26 +37,34 @@ class Database {
         }
     }
 
-    void removeArticle(String link) {
+    // this method removes the Article with the link given from the database
+    void removeArticle (String link) {
+  
         db = dbHelper.getWritableDatabase();
         String SQL = "delete from " + ArticlesContract.ArticlesEntry.TABLE_NAME + " where link='" + link + "';";
         db.execSQL(SQL);
         db.close();
     }
 
-    void insertArticle(Article article) {
+    // this method inserts Articles to the database
+    void insertArticle (Article article) {
+
         ContentValues values = new ContentValues();
 
+        // stores all the in the ContentValues
         values.put(ArticlesContract.ArticlesEntry.COLUMN_NAME_TITLE, article.getTitle());
         values.put(ArticlesContract.ArticlesEntry.COLUMN_NAME_DESCRIPTION, article.getDescription());
         values.put(ArticlesContract.ArticlesEntry.COLUMN_NAME_DATE, article.getDate());
         values.put(ArticlesContract.ArticlesEntry.COLUMN_NAME_LINK, article.getLinkToArticle());
 
+        // inserts all values to database
         db.insert(ArticlesContract.ArticlesEntry.TABLE_NAME, null, values);
     }
 
-    ArrayList<Article> getFavouriteArticles() {
+    // this method returns the favorite articles in an ArrayList
+    ArrayList<Article> getFavouriteArticles () {
 
+        // ArrayList of favorite Articles
         ArrayList<Article> favouriteArticles = new ArrayList<>();
 
         db = dbHelper.getReadableDatabase();
@@ -71,14 +81,17 @@ class Database {
             String date = cursor.getString(cursor.getColumnIndex(ArticlesContract.ArticlesEntry.COLUMN_NAME_DATE));
             String link = cursor.getString(cursor.getColumnIndex(ArticlesContract.ArticlesEntry.COLUMN_NAME_LINK));
 
+            // creates article
             Article article = new Article(title, description, date, link);
 
+            // adds article to to ArrayList
             favouriteArticles.add(article);
             Log.i("test", "added article");
         }
 
         cursor.close();
 
+        // returns the ArrayList of favorite Articles
         return favouriteArticles;
     }
 }

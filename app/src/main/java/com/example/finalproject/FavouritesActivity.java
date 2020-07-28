@@ -197,6 +197,7 @@ public class FavouritesActivity extends BaseActivity {
         });
     }
 
+    // this method removes the favourite Article passed through
     public void removeFavourite (Article article) {
         String link = article.getLinkToArticle();
         database.removeArticle(link);
@@ -234,7 +235,8 @@ public class FavouritesActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-  
+
+
     private void showAlert () {
         LayoutInflater factory = LayoutInflater.from(FavouritesActivity.this);
         final View view = factory.inflate(R.layout.alert_dialogue_image, null);

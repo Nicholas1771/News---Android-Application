@@ -18,6 +18,7 @@ import java.net.URL;
 
 public class SettingsActivity extends BaseActivity {
 
+    // delete, about and send button
     Button delete_search_button, about_button, send_button;
 
     ProgressBar progressBar;
@@ -37,6 +38,7 @@ public class SettingsActivity extends BaseActivity {
         about_button = findViewById((R.id.about_button));
         send_button = findViewById((R.id.send_button));
 
+        // click listener for delete search history button
         delete_search_button.setOnClickListener(v -> showSnackbar());
 
         currentTempTextView = findViewById(R.id.currentTemp);
@@ -65,17 +67,21 @@ public class SettingsActivity extends BaseActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
 
+    // when user clicks help menu
         if (item.getItemId() == R.id.help_settings) {
             AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
             builder.setTitle("Help")
                     .setMessage("Delete your search history or click the About Button")
                     .setPositiveButton("OK", null);
 
+
             AlertDialog alert = builder.create();
             alert.show();
         }
         return super.onOptionsItemSelected(item);
     }
+
+    // ASync task for weather api
 
     private class ForecastQuery extends AsyncTask<String, Integer, String> {
 
@@ -93,11 +99,11 @@ public class SettingsActivity extends BaseActivity {
                 //wait for data:
                 InputStream response = urlConnection.getInputStream();
 
-                //From part 3: slide 19
                 XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
                 xpp.setInput(response, "UTF-8");
+
                 int eventType = xpp.getEventType(); //The parser is currently at START_DOCUMENT
                 while (eventType != XmlPullParser.END_DOCUMENT) {
 
@@ -124,8 +130,10 @@ public class SettingsActivity extends BaseActivity {
 
         @Override
         protected void onProgressUpdate (Integer... values) {
+            //Make the progress bar visible
             progressBar.setVisibility(View.VISIBLE);
 
+            //Set the progress
             progressBar.setProgress(values[0]);
         }
 
@@ -134,6 +142,7 @@ public class SettingsActivity extends BaseActivity {
             currentTempTextView.setText(getString(R.string.current_temperature) + currentTemp);
             maxTempTextView.setText(getString(R.string.maximum_temperature) + maxTemp);
             minTempTextView.setText(getString(R.string.minimum_temperature) + minTemp);
+
             progressBar.setVisibility(View.INVISIBLE);
         }
     }

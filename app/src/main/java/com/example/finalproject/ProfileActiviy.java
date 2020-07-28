@@ -63,19 +63,24 @@ public class ProfileActiviy extends BaseActivity {
 
         final Button saveButton = findViewById(R.id.save_button);
 
+        // click listener for the Save button
         saveButton.setOnClickListener(v -> {
 
+            // toast message for save
             String toastMessage = "Saved profile picture (Fake message - data will be saved in milestone 3)";
             int duration = Toast.LENGTH_SHORT;
             Toast.makeText(getApplicationContext(), toastMessage, duration).show();
 
-            //String firstName = firstNameEditText.getText().toString();
-            //String lastName = lastNameEditText.getText().toString();
-            //String email = emailEditText.getText().toString();
+            // grabs the firstName,lastName, and email text from user
+            String firstName = firstNameEditText.getText().toString();
+            String lastName = lastNameEditText.getText().toString();
+            String email = emailEditText.getText().toString();
+
             //TO-DO save the data as shared preference
         });
     }
 
+    // this method sets the background image
     public void updateBackgroundImage () {
         backgroundImageContainer.setBackground(new BitmapDrawable(getApplicationContext().getResources(), image));
     }
@@ -189,11 +194,14 @@ public class ProfileActiviy extends BaseActivity {
     // help menu alert dialog
     public boolean onOptionsItemSelected(MenuItem item) {
 
+      // when user clicks help menu
+
         if (item.getItemId() == R.id.help_settings) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActiviy.this);
             builder.setTitle("Help")
                     .setMessage("Enter your information and press save at the bottom")
                     .setPositiveButton("OK", null);
+
 
             AlertDialog alert = builder.create();
             alert.show();
