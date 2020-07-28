@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class ArticlesDbHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
+
+    //database name
     private static final String DATABASE_NAME = "NewsApp.db";
 
     // create table sql query

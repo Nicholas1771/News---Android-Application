@@ -94,7 +94,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
     // setter for Title
     private void setTitle(String title) {
-        toolbar.setTitle(title);
+        toolbar.setTitle(title + " V1.2");
     }
 
     protected abstract int getLayoutResource();
