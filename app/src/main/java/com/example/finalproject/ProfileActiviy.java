@@ -124,6 +124,7 @@ public class ProfileActiviy extends BaseActivity {
         snackbar.show();
     }
 
+    //this async task uses an api to get a random background image
     private class BackgroundImageQuery extends AsyncTask<String, Integer, String> {
 
         @Override
@@ -132,16 +133,27 @@ public class ProfileActiviy extends BaseActivity {
             try {
                 //url where we get the articles from
                 publishProgress(10);
+
+                //access key for api
                 String ACCESS_KEY = "8Rb5ana9LDe_4_n78eZ_gciKw-HURz34SSdLKjoD-kM";
+
+                //url of api
                 URL url = new URL("https://api.unsplash.com/photos/random?client_id=" + ACCESS_KEY);
 
                 //url connection
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                //uses get request method
                 urlConnection.setRequestMethod("GET");
+
+                //input stream
                 InputStream response = urlConnection.getInputStream();
-                //setProgress(10);
+
+                //reader for the input stream
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response, StandardCharsets.UTF_8));
                 publishProgress(20);
+
+                //builds the string from the JSON
                 StringBuilder sb = new StringBuilder();
                 publishProgress(30);
                 String line;
@@ -149,16 +161,24 @@ public class ProfileActiviy extends BaseActivity {
                 while ((line = reader.readLine()) != null) {
                     sb.append(line).append("\n");
                 }
+
+                //JSON object
                 JSONObject jObject = new JSONObject(sb.toString());
                 publishProgress(50);
+
+                //All urls for the random image
                 JSONObject urls = jObject.getJSONObject("urls");
                 publishProgress(60);
+
+                //raw image url
                 URL imageURL = new URL(urls.getString("raw"));
                 publishProgress(70);
                 HttpURLConnection imageURLConnection = (HttpURLConnection) imageURL.openConnection();
                 publishProgress(80);
                 InputStream imageInputStream = imageURLConnection.getInputStream();
                 publishProgress(90);
+
+                //creates a bitmap from the image url
                 image = BitmapFactory.decodeStream(imageInputStream);
 
             } catch (Exception e) {

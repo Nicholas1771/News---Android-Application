@@ -24,16 +24,18 @@ public class ArticlesDbHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + ArticlesContract.ArticlesEntry.TABLE_NAME;
 
+    //constructor
     ArticlesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    //create the database
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
     }
+
+    //called when new version
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // This database is only a cache for online data, so its upgrade policy is
-        // to simply to discard the data and start over
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
     }

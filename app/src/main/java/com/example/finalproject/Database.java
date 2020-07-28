@@ -22,12 +22,16 @@ class Database {
     // this method checks if Database has article
     public boolean hasArticle (Article article) {
 
+        //gets a readable database
         db = dbHelper.getReadableDatabase();
 
+        //link to the article
         String link = article.getLinkToArticle();
 
+        //gets articles from database that matches the link
         Cursor cursor = db.rawQuery("select * from " + ArticlesContract.ArticlesEntry.TABLE_NAME + " where link='" + link + "';", null);
 
+        //if there is no articles matching, return false otherwise return true
         if (cursor.getCount() == 0) {
             cursor.close();
             return false;
@@ -39,8 +43,11 @@ class Database {
 
     // this method removes the Article with the link given from the database
     void removeArticle (String link) {
-  
+
+        //gets a writable database
         db = dbHelper.getWritableDatabase();
+
+        //SQL to remove the article containing that link
         String SQL = "delete from " + ArticlesContract.ArticlesEntry.TABLE_NAME + " where link='" + link + "';";
         db.execSQL(SQL);
         db.close();
@@ -49,15 +56,16 @@ class Database {
     // this method inserts Articles to the database
     void insertArticle (Article article) {
 
+        //content values to insert into database
         ContentValues values = new ContentValues();
 
-        // stores all the in the ContentValues
+        // stores all in the ContentValues
         values.put(ArticlesContract.ArticlesEntry.COLUMN_NAME_TITLE, article.getTitle());
         values.put(ArticlesContract.ArticlesEntry.COLUMN_NAME_DESCRIPTION, article.getDescription());
         values.put(ArticlesContract.ArticlesEntry.COLUMN_NAME_DATE, article.getDate());
         values.put(ArticlesContract.ArticlesEntry.COLUMN_NAME_LINK, article.getLinkToArticle());
 
-        // inserts all values to database
+        // inserts row to database
         db.insert(ArticlesContract.ArticlesEntry.TABLE_NAME, null, values);
     }
 
@@ -67,15 +75,17 @@ class Database {
         // ArrayList of favorite Articles
         ArrayList<Article> favouriteArticles = new ArrayList<>();
 
+        //gets readable database
         db = dbHelper.getReadableDatabase();
 
+        //gets all rows from the database
         String ALL_FAVOURITE_ROWS_SQL = "select * from " + ArticlesContract.ArticlesEntry.TABLE_NAME + ";";
         Cursor cursor = db.rawQuery(ALL_FAVOURITE_ROWS_SQL, null);
 
-        Log.i("test", "" + cursor.getCount());
-
+        //loops while there are more articles
         while (cursor.moveToNext()) {
 
+            //gets article information from the database
             String title = cursor.getString(cursor.getColumnIndex(ArticlesContract.ArticlesEntry.COLUMN_NAME_TITLE));
             String description = cursor.getString(cursor.getColumnIndex(ArticlesContract.ArticlesEntry.COLUMN_NAME_DESCRIPTION));
             String date = cursor.getString(cursor.getColumnIndex(ArticlesContract.ArticlesEntry.COLUMN_NAME_DATE));
@@ -86,7 +96,6 @@ class Database {
 
             // adds article to to ArrayList
             favouriteArticles.add(article);
-            Log.i("test", "added article");
         }
 
         cursor.close();

@@ -334,7 +334,7 @@ public class NewsListActivity extends BaseActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        //help menu for the activity
         if (item.getItemId() == R.id.help_settings) {
             AlertDialog.Builder builder = new AlertDialog.Builder(NewsListActivity.this);
             builder.setTitle("Help")

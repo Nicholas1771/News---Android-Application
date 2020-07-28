@@ -149,13 +149,8 @@ public class FavouritesActivity extends BaseActivity {
             //Gets the currently clicked Article object and saves it for use
             clickedArticle = unHiddenArticles.get(position);
 
+            //execute the image query
             new ImageQuery().execute();
-            //This alert opens when a news article title is clicked. It shows the articles title, description, date, and link
-
-
-
-            //Source from: https://essential-android.programming-books.io/alert-dialog-containing-a-clickable-link-9db7e0c7a32b4f84bb41150d06f418a9
-
         });
 
         //Runs on a long click of a news article, this will be used to show the snackbar to hide the article, or favourite the article
@@ -199,9 +194,17 @@ public class FavouritesActivity extends BaseActivity {
 
     // this method removes the favourite Article passed through
     public void removeFavourite (Article article) {
+
+        //gets the article link
         String link = article.getLinkToArticle();
+
+        //removes article from database
         database.removeArticle(link);
+
+        //updates allArticles
         allArticles = database.getFavouriteArticles();
+
+        //update articles
         updateArticles();
     }
 
@@ -210,51 +213,67 @@ public class FavouritesActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_list);
 
+        //displays the toolbar
         displayToolbar();
         setTitle("Favourites");
         //initialize the articles
         allArticles = new ArrayList<>();
 
         database = new Database(this);
+
+        //gets favourites articles from database
         allArticles = database.getFavouriteArticles();
 
+        //update the articles
         updateArticles();
     }
 
     // help menu alert dialog
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        //if the help item was selected, display an alertdialogue with help information
         if (item.getItemId() == R.id.help_settings) {
             AlertDialog.Builder builder = new AlertDialog.Builder(FavouritesActivity.this);
             builder.setTitle("Help")
                     .setMessage("Enter article and press search")
                     .setPositiveButton("OK", null);
 
+            //Show and create the alert dialogue
             AlertDialog alert = builder.create();
             alert.show();
         }
         return super.onOptionsItemSelected(item);
     }
 
-
+    //This method created an alert dialogue in cooperation with the async task
     private void showAlert () {
+
+        //Gets the alert dialogue view
         LayoutInflater factory = LayoutInflater.from(FavouritesActivity.this);
         final View view = factory.inflate(R.layout.alert_dialogue_image, null);
 
+        //sets the image to be shown
         imageView = view.findViewById(R.id.alert_image);
         imageView.setImageBitmap(image);
 
+        //Text views for the article information
         TextView title = view.findViewById(R.id.title);
         TextView description = view.findViewById(R.id.description);
         TextView date = view.findViewById(R.id.date);
         TextView link = view.findViewById(R.id.link);
 
+        //Sets the text views text to the article information
         title.setText(clickedArticle.getTitle());
         description.setText(clickedArticle.getDescription());
         date.setText(clickedArticle.getDate());
+
+        //link to article
         link.setText(Html.fromHtml("<a href=\"" + clickedArticle.getLinkToArticle() + "\">" + clickedArticle.getLinkToArticle()));
+
+        //makes the link work
         link.setMovementMethod(LinkMovementMethod.getInstance());
 
+        //alert dialgoue shows article information, image from search term, and has a button to add article to favourites database table
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FavouritesActivity.this);
         alertDialogBuilder.setTitle("Article Information")
                 .setView(view)
@@ -263,47 +282,69 @@ public class FavouritesActivity extends BaseActivity {
         alert.show();
     }
 
+    //This async task gets an image using the last word of the article title as a search term
     private class ImageQuery extends AsyncTask<String, Integer, String> {
 
         @Override
         protected String doInBackground(String... args) {
 
             try {
-                //url where we get the articles from
                 publishProgress(10);
+
+                //Gets the search term as the last word in the article title
                 String searchTerm = clickedArticle.getTitle().substring(clickedArticle.getTitle().lastIndexOf(" ")+1);
-                Log.i("test", searchTerm);
+
+                //access key for the api
                 String ACCESS_KEY = "8Rb5ana9LDe_4_n78eZ_gciKw-HURz34SSdLKjoD-kM";
+
+                //url to the api, uses access key and search term as parameters
                 URL url = new URL("https://api.unsplash.com/search/photos?query=" + searchTerm + "&client_id=" + ACCESS_KEY);
                 //url connection
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                //uses the GET method
                 urlConnection.setRequestMethod("GET");
+
+                //input stream for the url
                 InputStream response = urlConnection.getInputStream();
-                //setProgress(10);
+
+                //reader to read the input stream
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response, StandardCharsets.UTF_8));
                 publishProgress(20);
+
+                //this string builder is used to build the JSON string
                 StringBuilder sb = new StringBuilder();
                 publishProgress(30);
                 String line;
                 publishProgress(40);
                 while ((line = reader.readLine()) != null) {
+                    //loops through adding to the string
                     sb.append(line).append("\n");
                 }
+
+                //JSONObject of the whole string
                 JSONObject jObject = new JSONObject(sb.toString());
                 publishProgress(50);
+
+                //Image array JSON that is returned from the search query
                 JSONArray images = jObject.getJSONArray("results");
                 publishProgress(60);
 
+                //uses the first image in the array
                 JSONObject jImage = images.getJSONObject(0);
 
+                //urls of the image
                 JSONObject urls = jImage.getJSONObject("urls");
 
+                //raw url of the image
                 URL imageURL = new URL(urls.getString("raw"));
                 publishProgress(70);
                 HttpURLConnection imageURLConnection = (HttpURLConnection) imageURL.openConnection();
                 publishProgress(80);
                 InputStream imageInputStream = imageURLConnection.getInputStream();
                 publishProgress(90);
+
+                //creates a bitmap from the image url
                 image = BitmapFactory.decodeStream(imageInputStream);
 
             } catch (Exception e) {
