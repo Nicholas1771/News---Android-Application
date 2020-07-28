@@ -19,4 +19,9 @@
     <string name="send_feedback">Send Feedback</string>
     <string name="send">Send</string>
     <string name="help">Help</string>
+    <string name="current_temp">Current Temperature:</string>
+    <string name="max_temp">Maximum Temperature:</string>
+    <string name="min_temp">Minimum Temperature:</string>
+    <string name="uv_rating">UV Rating:</string>
+
 </resources>

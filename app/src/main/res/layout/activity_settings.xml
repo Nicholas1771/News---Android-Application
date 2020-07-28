@@ -18,10 +18,54 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
+            <ProgressBar
+                android:id="@+id/progressBar_settings"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/currentTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/current_temp"
+                android:layout_below="@id/progressBar_settings" />
+
+            <TextView
+                android:id="@+id/maxTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/max_temp"
+                android:layout_below="@id/currentTemp" />
+
+            <TextView
+                android:id="@+id/minTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/min_temp"
+                android:layout_below="@id/maxTemp" />
+
+            <TextView
+                android:id="@+id/UVRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/uv_rating"
+                android:layout_below="@id/minTemp" />
+
+            <ImageView
+                android:id="@+id/weatherImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/UVRating" />
+
+
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/delete_search_button"
+                android:layout_below="@+id/weatherImage"
                 android:text="@string/delete_search_history"/>
 
             <Button
