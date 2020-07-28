@@ -2,16 +2,16 @@ package com.example.finalproject;
 
 import android.provider.BaseColumns;
 
-public class ArticlesContract {
+class ArticlesContract {
 
     private ArticlesContract () {}
 
-    public static class ArticlesEntry implements BaseColumns {
-        public static final String TABLE_NAME = "favourite_articles";
-        public static final String _ID = "id";
-        public static final String COLUMN_NAME_TITLE = "title";
-        public static final String COLUMN_NAME_DESCRIPTION = "description";
-        public static final String COLUMN_NAME_DATE = "date";
-        public static final String COLUMN_NAME_LINK = "link";
+    static class ArticlesEntry implements BaseColumns {
+        static final String TABLE_NAME = "favourite_articles";
+        static final String _ID = "id";
+        static final String COLUMN_NAME_TITLE = "title";
+        static final String COLUMN_NAME_DESCRIPTION = "description";
+        static final String COLUMN_NAME_DATE = "date";
+        static final String COLUMN_NAME_LINK = "link";
     }
 }

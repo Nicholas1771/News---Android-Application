@@ -1,6 +1,5 @@
 package com.example.finalproject;
 
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -18,8 +17,6 @@ import android.app.AlertDialog;
 
 import com.google.android.material.snackbar.Snackbar;
 
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -114,14 +111,12 @@ public class NewsListActivity extends BaseActivity {
         return unhiddenArticles;
     }
 
-    private boolean addArticleToFavourites (Article article) {
+    private void addArticleToFavourites (Article article) {
         if (database.hasArticle(article)) {
             Log.i("false", "false");
-            return false;
         } else {
             database.insertArticle(article);
             Log.i("true", "true");
-            return true;
         }
     }
 
@@ -340,20 +335,15 @@ public class NewsListActivity extends BaseActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
+        if (item.getItemId() == R.id.help_settings) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(NewsListActivity.this);
+            builder.setTitle("Help")
+                    .setMessage("Enter article and press search")
+                    .setPositiveButton("OK", null);
 
-            case R.id.help_settings:
-                AlertDialog.Builder builder = new AlertDialog.Builder(NewsListActivity.this);
-                builder.setTitle("Help")
-                        .setMessage("Enter article and press search")
-                        .setPositiveButton("OK", null);
-
-                AlertDialog alert = builder.create();
-                alert.show();
-
-            default:
-                return super.onOptionsItemSelected(item);
-
+            AlertDialog alert = builder.create();
+            alert.show();
         }
+        return super.onOptionsItemSelected(item);
     }
 }

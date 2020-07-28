@@ -5,9 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -21,8 +20,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     // toolbar, drawer layout, navigation view and toggle
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private ActionBarDrawerToggle toggle;
 
     // displays toolbar
     void displayToolbar() {
@@ -38,7 +35,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         menuItemSelected(item);
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -79,10 +76,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
         toolbar = findViewById(R.id.toolbar);
 
-        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
 
         drawerLayout.addDrawerListener(toggle);
-        navigationView = findViewById(R.id.navigation);
+        NavigationView navigationView = findViewById(R.id.navigation);
         navigationView.setNavigationItemSelectedListener(this);
         toggle.setDrawerIndicatorEnabled(true);
         toggle.syncState();
@@ -118,7 +115,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         menuItemSelected(item);
         return super.onOptionsItemSelected(item);
     }

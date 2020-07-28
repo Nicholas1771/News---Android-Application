@@ -12,7 +12,7 @@ import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+//import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -33,9 +33,9 @@ public class ProfileActiviy extends BaseActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
-    private EditText firstNameEditText;
-    private EditText lastNameEditText;
-    private EditText emailEditText;
+    //private EditText firstNameEditText;
+    //private EditText lastNameEditText;
+    //private EditText emailEditText;
 
     RelativeLayout backgroundImageContainer;
 
@@ -55,9 +55,9 @@ public class ProfileActiviy extends BaseActivity {
 
         new BackgroundImageQuery().execute();
 
-        firstNameEditText = findViewById(R.id.first_name_edit_text);
-        lastNameEditText = findViewById(R.id.last_name_edit_text);
-        emailEditText = findViewById(R.id.email_edit_text);
+        //firstNameEditText = findViewById(R.id.first_name_edit_text);
+        //lastNameEditText = findViewById(R.id.last_name_edit_text);
+        //emailEditText = findViewById(R.id.email_edit_text);
 
         pictureButton.setOnClickListener(v -> dispatchTakePictureIntent());
 
@@ -75,6 +75,7 @@ public class ProfileActiviy extends BaseActivity {
             String firstName = firstNameEditText.getText().toString();
             String lastName = lastNameEditText.getText().toString();
             String email = emailEditText.getText().toString();
+
             //TO-DO save the data as shared preference
         });
     }
@@ -103,6 +104,7 @@ public class ProfileActiviy extends BaseActivity {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
+            assert extras != null;
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             pictureButton.setImageBitmap(imageBitmap);
         }
@@ -124,14 +126,13 @@ public class ProfileActiviy extends BaseActivity {
 
     private class BackgroundImageQuery extends AsyncTask<String, Integer, String> {
 
-        private final String ACCESS_KEY = "8Rb5ana9LDe_4_n78eZ_gciKw-HURz34SSdLKjoD-kM";
-
         @Override
         protected String doInBackground(String... args) {
 
             try {
                 //url where we get the articles from
                 publishProgress(10);
+                String ACCESS_KEY = "8Rb5ana9LDe_4_n78eZ_gciKw-HURz34SSdLKjoD-kM";
                 URL url = new URL("https://api.unsplash.com/photos/random?client_id=" + ACCESS_KEY);
 
                 //url connection
@@ -193,22 +194,19 @@ public class ProfileActiviy extends BaseActivity {
     // help menu alert dialog
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
+      // when user clicks help menu
 
-            // when user clicks help menu
-            case R.id.help_settings:
-                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActiviy.this);
-                builder.setTitle("Help")
-                        .setMessage("Enter your information and press save at the bottom")
-                        .setPositiveButton("OK", null);
+        if (item.getItemId() == R.id.help_settings) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActiviy.this);
+            builder.setTitle("Help")
+                    .setMessage("Enter your information and press save at the bottom")
+                    .setPositiveButton("OK", null);
 
-                AlertDialog alert = builder.create();
-                alert.show();
 
-            default:
-                return super.onOptionsItemSelected(item);
-
+            AlertDialog alert = builder.create();
+            alert.show();
         }
+        return super.onOptionsItemSelected(item);
     }
 
 }

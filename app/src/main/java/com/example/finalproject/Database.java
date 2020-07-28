@@ -8,17 +8,14 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-public class Database {
+class Database {
 
-    // ArticlesDBHelper object
-    ArticlesDbHelper dbHelper;
+  // ArticlesDBHelper object
+    private ArticlesDbHelper dbHelper;
 
-    SQLiteDatabase db;
+    private SQLiteDatabase db;
 
-    // select statement used for database
-    private final String ALL_FAVOURITE_ROWS_SQL = "select * from " + ArticlesContract.ArticlesEntry.TABLE_NAME + ";";
-
-    public Database (Context context) {
+    Database(Context context) {
         dbHelper = new ArticlesDbHelper(context);
     }
 
@@ -32,15 +29,17 @@ public class Database {
         Cursor cursor = db.rawQuery("select * from " + ArticlesContract.ArticlesEntry.TABLE_NAME + " where link='" + link + "';", null);
 
         if (cursor.getCount() == 0) {
+            cursor.close();
             return false;
         } else {
+            cursor.close();
             return true;
         }
     }
 
     // this method removes the Article with the link given from the database
-
-    public void removeArticle (String link) {
+    void removeArticle (String link) {
+  
         db = dbHelper.getWritableDatabase();
         String SQL = "delete from " + ArticlesContract.ArticlesEntry.TABLE_NAME + " where link='" + link + "';";
         db.execSQL(SQL);
@@ -48,8 +47,8 @@ public class Database {
     }
 
     // this method inserts Articles to the database
+    void insertArticle (Article article) {
 
-    public void insertArticle (Article article) {
         ContentValues values = new ContentValues();
 
         // stores all the in the ContentValues
@@ -63,14 +62,14 @@ public class Database {
     }
 
     // this method returns the favorite articles in an ArrayList
-
-    public ArrayList<Article> getFavouriteArticles () {
+    ArrayList<Article> getFavouriteArticles () {
 
         // ArrayList of favorite Articles
         ArrayList<Article> favouriteArticles = new ArrayList<>();
 
         db = dbHelper.getReadableDatabase();
 
+        String ALL_FAVOURITE_ROWS_SQL = "select * from " + ArticlesContract.ArticlesEntry.TABLE_NAME + ";";
         Cursor cursor = db.rawQuery(ALL_FAVOURITE_ROWS_SQL, null);
 
         Log.i("test", "" + cursor.getCount());

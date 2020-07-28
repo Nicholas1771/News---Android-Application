@@ -13,7 +13,6 @@
     <string name="settings">Settings</string>
     <string name="news">News</string>
     <string name="profile">Profile</string>
-    <string name="delete_search_history">Delete search history</string>
     <string name="about">About</string>
     <string name="label_for_feedback">label for feedback</string>
     <string name="send_feedback">Send Feedback</string>
@@ -23,5 +22,13 @@
     <string name="max_temp">Maximum Temperature:</string>
     <string name="min_temp">Minimum Temperature:</string>
     <string name="uv_rating">UV Rating:</string>
+    <string name="current_temperature">\"Current Temperature: \"</string>
+    <string name="maximum_temperature">\"Maximum Temperature: \"</string>
+    <string name="minimum_temperature">\"Minimum Temperature: \"</string>
+    <string name="alert_image">alert image</string>
+    <string name="description">Description</string>
+    <string name="date">Date</string>
+    <string name="link_to_article">Link to article</string>
+    <string name="delete_search_history">Delete search history</string>
 
 </resources>

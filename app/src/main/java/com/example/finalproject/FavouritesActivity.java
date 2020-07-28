@@ -2,7 +2,6 @@ package com.example.finalproject;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import android.widget.ProgressBar;
@@ -40,7 +38,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class FavouritesActivity extends BaseActivity {
     //All articles
@@ -227,21 +224,16 @@ public class FavouritesActivity extends BaseActivity {
     // help menu alert dialog
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
+        if (item.getItemId() == R.id.help_settings) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(FavouritesActivity.this);
+            builder.setTitle("Help")
+                    .setMessage("Enter article and press search")
+                    .setPositiveButton("OK", null);
 
-            case R.id.help_settings:
-                AlertDialog.Builder builder = new AlertDialog.Builder(FavouritesActivity.this);
-                builder.setTitle("Help")
-                        .setMessage("Enter article and press search")
-                        .setPositiveButton("OK", null);
-
-                AlertDialog alert = builder.create();
-                alert.show();
-
-            default:
-                return super.onOptionsItemSelected(item);
-
+            AlertDialog alert = builder.create();
+            alert.show();
         }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -273,9 +265,6 @@ public class FavouritesActivity extends BaseActivity {
 
     private class ImageQuery extends AsyncTask<String, Integer, String> {
 
-        // access key for API
-        private final String ACCESS_KEY = "8Rb5ana9LDe_4_n78eZ_gciKw-HURz34SSdLKjoD-kM";
-
         @Override
         protected String doInBackground(String... args) {
 
@@ -284,6 +273,7 @@ public class FavouritesActivity extends BaseActivity {
                 publishProgress(10);
                 String searchTerm = clickedArticle.getTitle().substring(clickedArticle.getTitle().lastIndexOf(" ")+1);
                 Log.i("test", searchTerm);
+                String ACCESS_KEY = "8Rb5ana9LDe_4_n78eZ_gciKw-HURz34SSdLKjoD-kM";
                 URL url = new URL("https://api.unsplash.com/search/photos?query=" + searchTerm + "&client_id=" + ACCESS_KEY);
                 //url connection
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

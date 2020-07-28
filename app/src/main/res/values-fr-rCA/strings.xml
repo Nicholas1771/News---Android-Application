@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Final Project</string>
+    <string name="search_hint_edit_text">chercher…</string>
+    <string name="search_button_text">" chercher"</string>
+    <string name="close_drawer">" Fermer le tiroir de navigation"</string>
+    <string name="open_drawer">" Ouvrir le tiroir de navigation"</string>
+    <string name="save_button">" sauver"</string>
+    <string name="email_text_view">Email</string>
+    <string name="last_name_text_view">" Nom de famille"</string>
+    <string name="first_name_text_view">" Prénom"</string>
+    <string name="profile_picture_cont_desc">" Image de profil"</string>
+    <string name="favourites">" Favoris"</string>
+    <string name="news">" Nouvelles"</string>
+    <string name="settings">" Paramètres"</string>
+    <string name="profile">" Profil"</string>
+    <string name="delete_search_history">" Supprimer l'historique de recherche"</string>
+    <string name="about">À propos</string>
+    <string name="label_for_feedback">" étiquette pour commentaires"</string>
+    <string name="send_feedback">" Envoyer des commentaires"</string>
+    <string name="send">" Envoyer"</string>
+    <string name="help">" Aidez-moi"</string>
+    <string name="current_temp">" Température actuelle:"</string>
+    <string name="max_temp">Température maximale:</string>
+    <string name="min_temp">" Température minimale:"</string>
+    <string name="uv_rating">" Évaluation UV:"</string>
+    <string name="current_temperature">" \"Température actuelle: \""</string>
+    <string name="maximum_temperature">" \"Température maximale: \""</string>
+    <string name="minimum_temperature">" \"Température minimale:\""</string>
+    <string name="alert_image">" image d'alerte"</string>
+    <string name="description">" La description"</string>
+    <string name="date">Date</string>
+    <string name="link_to_article">" Lien vers l'article"</string>
+</resources>
