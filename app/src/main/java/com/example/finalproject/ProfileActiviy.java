@@ -1,5 +1,6 @@
 package com.example.finalproject;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -182,4 +184,27 @@ public class ProfileActiviy extends BaseActivity {
             updateBackgroundImage();
         }
     }
+
+
+    // help menu alert dialog
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.help_settings:
+                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActiviy.this);
+                builder.setTitle("Help")
+                        .setMessage("Enter your information and press save at the bottom")
+                        .setPositiveButton("OK", (dialog, which) -> ProfileActiviy.super.onBackPressed())
+                        .setNegativeButton("Cancel", null);
+
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
 }

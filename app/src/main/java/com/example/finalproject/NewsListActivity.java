@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,10 +14,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import androidx.appcompat.app.AlertDialog;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -333,6 +335,26 @@ public class NewsListActivity extends BaseActivity {
             //Make progress bar invisible
             final ProgressBar progressBar = findViewById(R.id.progressBar);
             progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.help_settings:
+                AlertDialog.Builder builder = new AlertDialog.Builder(NewsListActivity.this);
+                builder.setTitle("Help")
+                        .setMessage("Enter article and press search")
+                        .setPositiveButton("OK", (dialog, which) -> NewsListActivity.super.onBackPressed())
+                        .setNegativeButton("Cancel", null);
+
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            default:
+                return super.onOptionsItemSelected(item);
+
         }
     }
 }
