@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -12,10 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AlertDialog;
 import java.util.ArrayList;
 import java.util.Objects;
+import android.app.AlertDialog;
 
 public class FavouritesActivity extends BaseActivity {
     //All articles
@@ -200,4 +200,26 @@ public class FavouritesActivity extends BaseActivity {
 
         updateArticles();
     }
+
+    // help menu alert dialog
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.help_settings:
+                AlertDialog.Builder builder = new AlertDialog.Builder(FavouritesActivity.this);
+                builder.setTitle("Help")
+                        .setMessage("Enter article and press search")
+                        .setPositiveButton("OK", (dialog, which) -> FavouritesActivity.super.onBackPressed())
+                        .setNegativeButton("Cancel", null);
+
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
 }
