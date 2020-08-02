@@ -1,12 +1,17 @@
 package com.example.finalproject;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,7 +30,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class NewsListActivity extends BaseActivity {
     //All articles
@@ -35,6 +42,14 @@ public class NewsListActivity extends BaseActivity {
     private ArrayList<Article> unHiddenArticles;
 
     private Database database;
+
+    private ArrayList<String> searchHistory;
+
+    private SharedPreferences sharedPreferences;
+
+    AutoCompleteTextView searchEditText;
+
+    private final String SEARCH = "NEWS_SEARCH";
 
     //Listview that stores the articles
     ListView newsArticleList;
@@ -176,25 +191,38 @@ public class NewsListActivity extends BaseActivity {
             //returns true so that the clickListener does not trigger
             return true;
         });
+    }
 
-        //The search button
-        Button searchButton = findViewById(R.id.search_button);
+    private void addSearchHistory (String search) {
+        Set<String> searchHistorySet = sharedPreferences.getStringSet(SEARCH, new HashSet<>());
 
-        //This listener waits for the search button to be clicked, and the searches for articles
-        searchButton.setOnClickListener(v -> {
+        searchHistorySet.add(search);
 
-            //Gets the edit text where the search text is stored
-            EditText searchEditText = findViewById(R.id.search_edit_text);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
-            //Gets the search text
-            String searchText = searchEditText.getText().toString();
+        editor.putStringSet(SEARCH, searchHistorySet);
 
-            //Calls the search articles method and passes it the search text
-            searchArticles(searchText);
+        editor.apply();
 
-            //updates the articles once the search has ran
-            updateArticles();
-        });
+        updateAutoComplete();
+    }
+
+    private ArrayList<String> getSearchHistory () {
+
+        HashSet<String> searchHistorySet = (HashSet<String>) sharedPreferences.getStringSet(SEARCH, new HashSet<>());
+
+        return new ArrayList<>(searchHistorySet);
+    }
+
+    private void updateAutoComplete () {
+        ArrayAdapter<String> adapter;
+
+        searchHistory = getSearchHistory();
+
+        adapter = new ArrayAdapter<>(NewsListActivity.this, android.R.layout.simple_dropdown_item_1line, searchHistory);
+
+        searchEditText.setAdapter(adapter);
+        searchEditText.setThreshold(0);
     }
 
     @Override
@@ -203,6 +231,12 @@ public class NewsListActivity extends BaseActivity {
         setContentView(R.layout.news_list);
 
         database = new Database(this);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        searchEditText = findViewById(R.id.search_edit_text);
+
+        updateAutoComplete();
 
         displayToolbar();
         setTitle("News");
@@ -213,6 +247,23 @@ public class NewsListActivity extends BaseActivity {
         new ArticleQuery().execute();
         //List View object for the list view from news_list.xml
         updateArticles();
+
+        //The search button
+        Button searchButton = findViewById(R.id.search_button);
+
+        //This listener waits for the search button to be clicked, and the searches for articles
+        searchButton.setOnClickListener(v -> {
+            //Gets the search text
+            String searchText = searchEditText.getText().toString();
+
+            addSearchHistory(searchText);
+
+            //Calls the search articles method and passes it the search text
+            searchArticles(searchText);
+
+            //updates the articles once the search has ran
+            updateArticles();
+        });
     }
     //Async class for making a query
     private class ArticleQuery extends AsyncTask<String, Integer, String> {
