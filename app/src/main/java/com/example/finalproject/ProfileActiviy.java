@@ -2,18 +2,23 @@ package com.example.finalproject;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 
+import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 //import android.widget.EditText;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -23,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -33,13 +39,23 @@ public class ProfileActiviy extends BaseActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
-    //private EditText firstNameEditText;
-    //private EditText lastNameEditText;
-    //private EditText emailEditText;
+    private EditText firstNameEditText;
+    private EditText lastNameEditText;
+    private EditText emailEditText;
+    private ImageButton pictureButton;
 
-    RelativeLayout backgroundImageContainer;
+    private final String FIRST_NAME = "FIRST_NAME";
+    private final String LAST_NAME = "LAST_NAME";
+    private final String EMAIL = "EMAIL";
+    private final String IMAGE = "IMAGE";
 
-    Bitmap image;
+    private SharedPreferences sharedPreferences;
+
+    ImageView randomImageView;
+
+    private Bitmap randomImage;
+
+    private Bitmap profileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +65,21 @@ public class ProfileActiviy extends BaseActivity {
         displayToolbar();
         setTitle("Profile");
 
-        final ImageButton pictureButton = findViewById(R.id.picture_button);
-
-        backgroundImageContainer = findViewById(R.id.background_image_container);
+        randomImageView = findViewById(R.id.random_image);
 
         new BackgroundImageQuery().execute();
 
-        //firstNameEditText = findViewById(R.id.first_name_edit_text);
-        //lastNameEditText = findViewById(R.id.last_name_edit_text);
-        //emailEditText = findViewById(R.id.email_edit_text);
+        firstNameEditText = findViewById(R.id.first_name_edit_text);
+        lastNameEditText = findViewById(R.id.last_name_edit_text);
+        emailEditText = findViewById(R.id.email_edit_text);
+        pictureButton = findViewById(R.id.picture_button);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        firstNameEditText.setText(sharedPreferences.getString(FIRST_NAME, ""));
+        lastNameEditText.setText(sharedPreferences.getString(LAST_NAME, ""));
+        emailEditText.setText(sharedPreferences.getString(EMAIL, ""));
+        pictureButton.setImageBitmap(getImageFromEncodedString(sharedPreferences.getString(IMAGE, "")));
 
         pictureButton.setOnClickListener(v -> dispatchTakePictureIntent());
 
@@ -72,17 +94,29 @@ public class ProfileActiviy extends BaseActivity {
             Toast.makeText(getApplicationContext(), toastMessage, duration).show();
 
             // grabs the firstName,lastName, and email text from user
-            //String firstName = firstNameEditText.getText().toString();
-            //String lastName = lastNameEditText.getText().toString();
-            //String email = emailEditText.getText().toString();
+            String firstName = firstNameEditText.getText().toString();
+            String lastName = lastNameEditText.getText().toString();
+            String email = emailEditText.getText().toString();
+
+            saveProfileData(firstName, lastName, email, getEncodedImage(profileImage));
 
             //TO-DO save the data as shared preference
         });
     }
 
+    private void saveProfileData (String firstName, String lastName, String email, String encodedImage) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString(FIRST_NAME, firstName);
+        editor.putString(LAST_NAME, lastName);
+        editor.putString(EMAIL, email);
+        editor.putString(IMAGE, encodedImage);
+        editor.apply();
+    }
+
     // this method sets the background image
     public void updateBackgroundImage () {
-        backgroundImageContainer.setBackground(new BitmapDrawable(getApplicationContext().getResources(), image));
+        randomImageView.setImageBitmap(randomImage);
     }
 
     @Override
@@ -97,6 +131,21 @@ public class ProfileActiviy extends BaseActivity {
         }
     }
 
+    //Source: https://stackoverflow.com/questions/17268519/how-to-store-bitmap-object-in-sharedpreferences-in-android
+    private String getEncodedImage (Bitmap profileImage) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        profileImage.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+
+        return Base64.encodeToString(b, Base64.DEFAULT);
+    }
+
+    //Source: https://stackoverflow.com/questions/17268519/how-to-store-bitmap-object-in-sharedpreferences-in-android
+    private Bitmap getImageFromEncodedString (String encodedImage) {
+        byte[] imageAsBytes = Base64.decode(encodedImage.getBytes(), Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -105,8 +154,8 @@ public class ProfileActiviy extends BaseActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             assert extras != null;
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            pictureButton.setImageBitmap(imageBitmap);
+            profileImage = (Bitmap) extras.get("data");
+            pictureButton.setImageBitmap(profileImage);
         }
 
         //Creates snackbar to retake picture
@@ -179,7 +228,7 @@ public class ProfileActiviy extends BaseActivity {
                 publishProgress(90);
 
                 //creates a bitmap from the image url
-                image = BitmapFactory.decodeStream(imageInputStream);
+                randomImage = BitmapFactory.decodeStream(imageInputStream);
 
             } catch (Exception e) {
                 e.printStackTrace();

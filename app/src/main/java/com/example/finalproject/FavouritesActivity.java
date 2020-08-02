@@ -1,9 +1,11 @@
 package com.example.finalproject;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 
@@ -14,6 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -38,6 +42,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FavouritesActivity extends BaseActivity {
     //All articles
@@ -45,6 +51,14 @@ public class FavouritesActivity extends BaseActivity {
 
     //List of articles that are not hidden
     private ArrayList<Article> unHiddenArticles;
+
+    private ArrayList<String> searchHistory;
+
+    private SharedPreferences sharedPreferences;
+
+    AutoCompleteTextView searchEditText;
+
+    private final String SEARCH = "FAVOURITES_SEARCH";
 
     //Listview that stores the articles
     ListView newsArticleList;
@@ -171,25 +185,6 @@ public class FavouritesActivity extends BaseActivity {
             //returns true so that the clickListener does not trigger
             return true;
         });
-
-        //The search button
-        Button searchButton = findViewById(R.id.search_button);
-
-        //This listener waits for the search button to be clicked, and the searches for articles
-        searchButton.setOnClickListener(v -> {
-
-            //Gets the edit text where the search text is stored
-            EditText searchEditText = findViewById(R.id.search_edit_text);
-
-            //Gets the search text
-            String searchText = searchEditText.getText().toString();
-
-            //Calls the search articles method and passes it the search text
-            searchArticles(searchText);
-
-            //updates the articles once the search has ran
-            updateArticles();
-        });
     }
 
     // this method removes the favourite Article passed through
@@ -221,11 +216,37 @@ public class FavouritesActivity extends BaseActivity {
 
         database = new Database(this);
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        searchEditText = findViewById(R.id.search_edit_text);
+
+        updateAutoComplete();
+
         //gets favourites articles from database
         allArticles = database.getFavouriteArticles();
 
         //update the articles
         updateArticles();
+
+        //The search button
+        Button searchButton = findViewById(R.id.search_button);
+
+        //This listener waits for the search button to be clicked, and the searches for articles
+        searchButton.setOnClickListener(v -> {
+            //Gets the edit text where the search text is stored
+            EditText searchEditText = findViewById(R.id.search_edit_text);
+
+            //Gets the search text
+            String searchText = searchEditText.getText().toString();
+
+            addSearchHistory(searchText);
+
+            //Calls the search articles method and passes it the search text
+            searchArticles(searchText);
+
+            //updates the articles once the search has ran
+            updateArticles();
+        });
     }
 
     // help menu alert dialog
@@ -243,6 +264,38 @@ public class FavouritesActivity extends BaseActivity {
             alert.show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void addSearchHistory (String search) {
+        Set<String> searchHistorySet = sharedPreferences.getStringSet(SEARCH, new HashSet<>());
+
+        searchHistorySet.add(search);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putStringSet(SEARCH, searchHistorySet);
+
+        editor.apply();
+
+        updateAutoComplete();
+    }
+
+    private ArrayList<String> getSearchHistory () {
+
+        HashSet<String> searchHistorySet = (HashSet<String>) sharedPreferences.getStringSet(SEARCH, new HashSet<>());
+
+        return new ArrayList<>(searchHistorySet);
+    }
+
+    private void updateAutoComplete () {
+        ArrayAdapter<String> adapter;
+
+        searchHistory = getSearchHistory();
+
+        adapter = new ArrayAdapter<>(FavouritesActivity.this, android.R.layout.simple_dropdown_item_1line, searchHistory);
+
+        searchEditText.setAdapter(adapter);
+        searchEditText.setThreshold(0);
     }
 
     //This method created an alert dialogue in cooperation with the async task
