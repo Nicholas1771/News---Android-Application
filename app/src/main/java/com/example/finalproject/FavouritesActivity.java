@@ -54,11 +54,13 @@ public class FavouritesActivity extends BaseActivity {
 
     private ArrayList<String> searchHistory;
 
+    private boolean tracking;
+
     private SharedPreferences sharedPreferences;
 
     AutoCompleteTextView searchEditText;
 
-    private final String SEARCH = "FAVOURITES_SEARCH";
+    private final String SEARCH = "SEARCH";
 
     //Listview that stores the articles
     ListView newsArticleList;
@@ -225,6 +227,8 @@ public class FavouritesActivity extends BaseActivity {
         //gets favourites articles from database
         allArticles = database.getFavouriteArticles();
 
+        tracking = getTrackHistory();
+
         //update the articles
         updateArticles();
 
@@ -239,8 +243,9 @@ public class FavouritesActivity extends BaseActivity {
             //Gets the search text
             String searchText = searchEditText.getText().toString();
 
-            addSearchHistory(searchText);
-
+            if (tracking) {
+                addSearchHistory(searchText);
+            }
             //Calls the search articles method and passes it the search text
             searchArticles(searchText);
 
@@ -264,6 +269,10 @@ public class FavouritesActivity extends BaseActivity {
             alert.show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean getTrackHistory () {
+        return sharedPreferences.getBoolean("TRACK", false);
     }
 
     private void addSearchHistory (String search) {

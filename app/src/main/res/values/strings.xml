@@ -22,13 +22,17 @@
     <string name="max_temp">Maximum Temperature:</string>
     <string name="min_temp">Minimum Temperature:</string>
     <string name="uv_rating">UV Rating:</string>
-    <string name="current_temperature">\"Current Temperature: \"</string>
-    <string name="maximum_temperature">\"Maximum Temperature: \"</string>
-    <string name="minimum_temperature">\"Minimum Temperature: \"</string>
     <string name="alert_image">alert image</string>
     <string name="description">Description</string>
     <string name="date">Date</string>
     <string name="link_to_article">Link to article</string>
     <string name="delete_search_history">Delete search history</string>
+    <string name="current_weather_information">Current Weather Information</string>
+    <string name="view_search_history">View Search History</string>
+    <string name="track_history">Track History?</string>
+    <string name="your_search_history">Your search history</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

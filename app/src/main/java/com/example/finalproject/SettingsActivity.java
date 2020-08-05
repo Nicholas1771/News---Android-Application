@@ -1,30 +1,60 @@
 package com.example.finalproject;
 
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.snackbar.Snackbar;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 public class SettingsActivity extends BaseActivity {
 
+    private final String TRACK = "TRACK";
     // delete, about and send button
-    Button delete_search_button, about_button, send_button;
+    Button deleteSearchButton;
+    Button sendButton;
+    Button viewSearchButton;
+
+    private CheckBox trackCheckBox;
+
+    private EditText feedbackEditText;
 
     ProgressBar progressBar;
     TextView currentTempTextView;
     TextView maxTempTextView;
     TextView minTempTextView;
+
+    private SharedPreferences sharedPreferences;
+
+    private final String SEARCH = "SEARCH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +64,53 @@ public class SettingsActivity extends BaseActivity {
         displayToolbar();
         setTitle("Settings");
 
-        delete_search_button = findViewById((R.id.delete_search_button));
-        about_button = findViewById((R.id.about_button));
-        send_button = findViewById((R.id.send_button));
+        deleteSearchButton = findViewById((R.id.delete_search_button));
+        sendButton = findViewById((R.id.send_button));
+        viewSearchButton = findViewById((R.id.view_search_button));
+
+        feedbackEditText = findViewById(R.id.feedback_edit_text);
 
         // click listener for delete search history button
-        delete_search_button.setOnClickListener(v -> showSnackbar());
+        deleteSearchButton.setOnClickListener(v -> showSnackbar());
 
         currentTempTextView = findViewById(R.id.currentTemp);
         maxTempTextView = findViewById(R.id.maxTemp);
         minTempTextView = findViewById(R.id.minTemp);
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        trackCheckBox = findViewById(R.id.search_checkbox);
+        trackCheckBox.setChecked(getTrackHistory());
+        trackCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            setTrackHistory(isChecked);
+            String toastMessage;
+
+            if (isChecked) {
+                toastMessage = "Now tracking search history";
+            } else {
+                toastMessage = "Now not tracking search history";
+            }
+
+            Toast.makeText(SettingsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+        });
+
+        viewSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getSupportFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+
+                Fragment historyFragment = new HistoryFragment();
+
+                transaction.add(R.id.search_container, historyFragment);
+                transaction.commit();
+            }
+        });
+
+        sendButton.setOnClickListener(v -> {
+            String feedback = feedbackEditText.getText().toString();
+            sendFeedback(feedback);
+        });
 
         // Forecast query
         progressBar = findViewById(R.id.progressBar_settings);
@@ -54,10 +120,43 @@ public class SettingsActivity extends BaseActivity {
         obj.execute();
     }
 
+    private boolean getTrackHistory () {
+        return sharedPreferences.getBoolean("TRACK", false);
+    }
+
+    private void setTrackHistory (boolean trackHistory) {
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putBoolean(TRACK, trackHistory);
+
+        editor.apply();
+    }
+
+    public void sendFeedback(String feedback) {
+        SendFeedback sendFeedback = new SendFeedback();
+        sendFeedback.execute(feedback);
+    }
+
+    private void deleteSearchHistory() {
+
+        Set<String> searchHistorySet = sharedPreferences.getStringSet(SEARCH, new HashSet<>());
+
+        searchHistorySet.clear();
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putStringSet(SEARCH, searchHistorySet);
+
+        editor.apply();
+
+        Toast.makeText(SettingsActivity.this, "Search history has been deleted", Toast.LENGTH_SHORT).show();
+    }
+
     // snackbar for the delete button
     private void showSnackbar() {
-        Snackbar.make(delete_search_button, "Do you want to delete the search history?" , Snackbar.LENGTH_LONG)
-                .setAction("Delete", v -> Toast.makeText(SettingsActivity.this, "Search history has been deleted", Toast.LENGTH_SHORT).show()).show();
+        Snackbar.make(deleteSearchButton, "Do you want to delete the search history?" , Snackbar.LENGTH_LONG)
+                .setAction("Delete", v -> deleteSearchHistory()).show();
     }
 
     @Override
@@ -79,6 +178,43 @@ public class SettingsActivity extends BaseActivity {
             alert.show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    class SendFeedback extends AsyncTask<String, Void, String> {
+
+        protected String doInBackground(String... feedback) {
+            String to = "capstoneprojectwebapp@gmail.com";
+            String from = "capstoneprojectwebapp@gmail.com";
+
+            Properties properties = new Properties();
+            properties.put("mail.smtp.auth", "true");
+            properties.put("mail.smtp.starttls.enable", "true");
+            properties.put("mail.smtp.host", "smtp.gmail.com");
+            properties.put("mail.smtp.port", 587);
+
+            Session session = Session.getDefaultInstance(properties, new javax.mail.Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication () {
+                    return new PasswordAuthentication("capstoneprojectwebapp@gmail.com", "Capstone.34");
+                }
+            });
+
+            try {
+                MimeMessage message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(from));
+                message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+                message.setSubject("Feedback");
+                message.setText(feedback[0]);
+                Transport.send(message);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            String toastMessage = "Thank you for your feedback :)";
+            Toast.makeText(SettingsActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 
     // ASync task for weather api
@@ -139,9 +275,9 @@ public class SettingsActivity extends BaseActivity {
 
         @Override
         protected void onPostExecute (String result) {
-            currentTempTextView.setText(getString(R.string.current_temperature) + currentTemp);
-            maxTempTextView.setText(getString(R.string.maximum_temperature) + maxTemp);
-            minTempTextView.setText(getString(R.string.minimum_temperature) + minTemp);
+            currentTempTextView.setText(getString(R.string.current_temp) + currentTemp);
+            maxTempTextView.setText(getString(R.string.max_temp) + maxTemp);
+            minTempTextView.setText(getString(R.string.min_temp) + minTemp);
 
             progressBar.setVisibility(View.INVISIBLE);
         }

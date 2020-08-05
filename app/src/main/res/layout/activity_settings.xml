@@ -16,7 +16,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_margin="10dp">
 
 
             <ProgressBar
@@ -26,11 +27,20 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:id="@+id/currentWeatherText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/current_weather_information"
+                android:layout_below="@+id/progressBar_settings"
+                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+                android:textSize="20sp"/>
+
+            <TextView
                 android:id="@+id/currentTemp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/current_temp"
-                android:layout_below="@id/progressBar_settings" />
+                android:layout_below="@id/currentWeatherText" />
 
             <TextView
                 android:id="@+id/maxTemp"
@@ -47,18 +57,46 @@
                 android:layout_below="@id/maxTemp" />
 
             <Button
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/delete_search_button"
+                android:id="@+id/view_search_button"
                 android:layout_below="@+id/minTemp"
-                android:text="@string/delete_search_history"/>
+                android:layout_toStartOf="@id/label_checkbox"
+                android:layout_alignParentStart="true"
+                android:text="@string/view_search_history"/>
 
             <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/delete_search_button"
+                android:layout_below="@+id/view_search_button"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@id/label_checkbox"
+                android:text="@string/delete_search_history"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/label_checkbox"
+                android:layout_alignParentEnd="true"
+                android:text="@string/track_history"
+                android:textSize="24sp"
+                android:layout_alignTop="@id/view_search_button"/>
+
+            <CheckBox
+                style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/search_checkbox"
+                android:layout_below="@id/label_checkbox"
+                android:layout_alignParentEnd="true" />
+
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/about_button"
-                android:text="@string/about"
-                android:layout_below="@+id/delete_search_button"/>
+                android:id="@+id/search_container"
+                android:layout_below="@+id/delete_search_button"
+                android:layout_above="@+id/feedback_label"/>
 
             <TextView
                 android:layout_width="match_parent"

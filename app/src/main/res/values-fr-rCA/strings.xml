@@ -31,4 +31,8 @@
     <string name="description">" La description"</string>
     <string name="date">Date</string>
     <string name="link_to_article">" Lien vers l'article"</string>
+    <string name="current_weather_information">Current Weather Information</string>
+    <string name="view_search_history">View Search History</string>
+    <string name="track_history">Track History?</string>
+    <string name="your_search_history">Your search history</string>
 </resources>

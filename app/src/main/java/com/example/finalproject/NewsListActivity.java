@@ -47,9 +47,11 @@ public class NewsListActivity extends BaseActivity {
 
     private SharedPreferences sharedPreferences;
 
+    private boolean tracking;
+
     AutoCompleteTextView searchEditText;
 
-    private final String SEARCH = "NEWS_SEARCH";
+    private final String SEARCH = "SEARCH";
 
     //Listview that stores the articles
     ListView newsArticleList;
@@ -57,6 +59,10 @@ public class NewsListActivity extends BaseActivity {
     @Override
     public int getLayoutResource() {
         return R.layout.news_list;
+    }
+
+    private boolean getTrackHistory () {
+        return sharedPreferences.getBoolean("TRACK", false);
     }
 
     //This method takes a string search term and searches through the articles, it returns a list of articles that are matching
@@ -236,6 +242,8 @@ public class NewsListActivity extends BaseActivity {
 
         searchEditText = findViewById(R.id.search_edit_text);
 
+        tracking = getTrackHistory();
+
         updateAutoComplete();
 
         displayToolbar();
@@ -256,7 +264,9 @@ public class NewsListActivity extends BaseActivity {
             //Gets the search text
             String searchText = searchEditText.getText().toString();
 
-            addSearchHistory(searchText);
+            if (tracking) {
+                addSearchHistory(searchText);
+            }
 
             //Calls the search articles method and passes it the search text
             searchArticles(searchText);
