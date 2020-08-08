@@ -38,6 +38,9 @@
                     android:id="@+id/search_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:background="@android:color/holo_blue_bright"
+                    android:textSize="20sp"
                     android:text="@string/search_button_text" />
 
             </LinearLayout>
@@ -53,7 +56,9 @@
                 android:id="@+id/list_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/progressBar" />
+                android:layout_below="@+id/progressBar"
+                android:divider="#FFFFFF"
+                android:dividerHeight="4.0sp"/>
         </RelativeLayout>
 
         <include layout="@layout/nav_drawer_layout" />

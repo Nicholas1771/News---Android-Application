@@ -133,7 +133,7 @@ public class SettingsActivity extends BaseActivity {
             Fragment historyFragment = new HistoryFragment();
 
             //add the fragment to the transaction and commit
-            transaction.add(R.id.search_container, historyFragment);
+            transaction.replace(R.id.search_container, historyFragment, "history_fragment");
             transaction.commit();
         });
 

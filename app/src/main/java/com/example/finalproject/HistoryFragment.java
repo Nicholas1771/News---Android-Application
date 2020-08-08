@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -55,6 +56,12 @@ public class HistoryFragment extends Fragment {
 
         //set the listview adapter
         listView.setAdapter(adapter);
+
+        //gets the delete button
+        Button deleteButton = getActivity().findViewById(R.id.delete_fragment);
+
+        //remove this fragment when delete button is pressed
+        deleteButton.setOnClickListener(v -> getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit());
     }
 
 
