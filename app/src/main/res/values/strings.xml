@@ -30,7 +30,7 @@
     <string name="current_weather_information">Current Weather Information</string>
     <string name="view_search_history">View Search History</string>
     <string name="track_history">Track History?</string>
-    <string name="your_search_history">Your search history</string>
+    <string name="your_search_history">Search history</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="random_image">random image</string>

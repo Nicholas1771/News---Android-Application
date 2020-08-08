@@ -31,6 +31,6 @@
     <string name="current_weather_information">Informations météorologiques actuelles</string>
     <string name="view_search_history">Afficher l\'historique de recherche</string>
     <string name="track_history">Suivre l\'historique?</string>
-    <string name="your_search_history">Votre historique de recherche</string>
+    <string name="your_search_history">Historique de recherche</string>
     <string name="random_image">image aléatoire</string>
 </resources>
