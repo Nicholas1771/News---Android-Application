@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.app.AlertDialog;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.snackbar.Snackbar;
 
 
@@ -41,16 +43,22 @@ public class NewsListActivity extends BaseActivity {
     //List of articles that are not hidden
     private ArrayList<Article> unHiddenArticles;
 
+    //database
     private Database database;
 
+    //search history
     private ArrayList<String> searchHistory;
 
+    //shared preferences
     private SharedPreferences sharedPreferences;
 
+    //true if app is tracking search history
     private boolean tracking;
 
+    //edit text where search term is entered
     AutoCompleteTextView searchEditText;
 
+    //String used to get the search history from the shared preferences
     private final String SEARCH = "SEARCH";
 
     //Listview that stores the articles
@@ -61,6 +69,7 @@ public class NewsListActivity extends BaseActivity {
         return R.layout.news_list;
     }
 
+    //gets the track boolean variable from the shared preferences
     private boolean getTrackHistory () {
         return sharedPreferences.getBoolean("TRACK", false);
     }
@@ -132,12 +141,11 @@ public class NewsListActivity extends BaseActivity {
         return unhiddenArticles;
     }
 
+    //add an article to the favourites table in the database
     private void addArticleToFavourites (Article article) {
-        if (database.hasArticle(article)) {
-            Log.i("false", "false");
-        } else {
+        if (!database.hasArticle(article)) {
+            //database does not already contain article, add the article
             database.insertArticle(article);
-            Log.i("true", "true");
         }
     }
 
@@ -199,35 +207,53 @@ public class NewsListActivity extends BaseActivity {
         });
     }
 
+    //method to add a search history to the list of search history stored in shared preferences
     private void addSearchHistory (String search) {
+        //gets the current set of search history in the shared preferences
         Set<String> searchHistorySet = sharedPreferences.getStringSet(SEARCH, new HashSet<>());
 
+        //add the search text to the set
         searchHistorySet.add(search);
 
+        //get the editor
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        //replace the old set with the new one
         editor.putStringSet(SEARCH, searchHistorySet);
 
+        //apply changes
         editor.apply();
 
+        //update the auto complete information
         updateAutoComplete();
     }
 
+    //gets search history from shared preferences and converts it to an arraylist
     private ArrayList<String> getSearchHistory () {
 
+        //get the hashset from shared preferences
         HashSet<String> searchHistorySet = (HashSet<String>) sharedPreferences.getStringSet(SEARCH, new HashSet<>());
 
+        //return hashset as an arraylist<String>
         return new ArrayList<>(searchHistorySet);
     }
 
+    //updates the autocomplete information
     private void updateAutoComplete () {
+
+        //array adapter
         ArrayAdapter<String> adapter;
 
-        searchHistory = getSearchHistory();
+        //gets the current search history from shared preferences
+        ArrayList<String> searchHistory = getSearchHistory();
 
+        //initialize the adapter with the search history
         adapter = new ArrayAdapter<>(NewsListActivity.this, android.R.layout.simple_dropdown_item_1line, searchHistory);
 
+        //sets the adapter to the auto complete edit text
         searchEditText.setAdapter(adapter);
+
+        //sets threshold to 0
         searchEditText.setThreshold(0);
     }
 
@@ -236,16 +262,22 @@ public class NewsListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_list);
 
+        //initialize the database
         database = new Database(this);
 
+        //gets the default shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        //gets the search edit text
         searchEditText = findViewById(R.id.search_edit_text);
 
+        //gets the track history boolean variable
         tracking = getTrackHistory();
 
+        //updates the auto complete information
         updateAutoComplete();
 
+        //display the toolbar and set the title
         displayToolbar();
         setTitle("News");
         //initialize the articles
@@ -264,6 +296,7 @@ public class NewsListActivity extends BaseActivity {
             //Gets the search text
             String searchText = searchEditText.getText().toString();
 
+            //if currently tracking search history, add the search history
             if (tracking) {
                 addSearchHistory(searchText);
             }
@@ -394,14 +427,17 @@ public class NewsListActivity extends BaseActivity {
         }
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         //help menu for the activity
-        if (item.getItemId() == R.id.help_settings) {
+        if (item.getItemId() == R.id.nav_help) {
+
+            //builder for the alert diagloue
             AlertDialog.Builder builder = new AlertDialog.Builder(NewsListActivity.this);
             builder.setTitle("Help")
-                    .setMessage("Enter article and press search")
+                    .setMessage("This page contains the latest BBC news articles. You can search for a specific article, and click the article for detailed information and an option to add the article to favourites. You can also hide an article by long clicking it.")
                     .setPositiveButton("OK", null);
 
+            //creates and shows the alert diaglogue with the help information
             AlertDialog alert = builder.create();
             alert.show();
         }

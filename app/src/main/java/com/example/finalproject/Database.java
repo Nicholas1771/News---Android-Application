@@ -13,6 +13,7 @@ class Database {
   // ArticlesDBHelper object
     private ArticlesDbHelper dbHelper;
 
+    //database
     private SQLiteDatabase db;
 
     Database(Context context) {
@@ -20,7 +21,7 @@ class Database {
     }
 
     // this method checks if Database has article
-    public boolean hasArticle (Article article) {
+    boolean hasArticle(Article article) {
 
         //gets a readable database
         db = dbHelper.getReadableDatabase();

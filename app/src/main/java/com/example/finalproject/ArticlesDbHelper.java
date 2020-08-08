@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class ArticlesDbHelper extends SQLiteOpenHelper {
 
+    //database version
     private static final int DATABASE_VERSION = 1;
 
     //database name

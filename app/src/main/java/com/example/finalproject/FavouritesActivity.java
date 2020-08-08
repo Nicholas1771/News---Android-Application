@@ -1,5 +1,6 @@
 package com.example.finalproject;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,7 +13,6 @@ import android.text.method.LinkMovementMethod;
 
 import android.view.MenuItem;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import org.json.JSONArray;
@@ -52,25 +53,31 @@ public class FavouritesActivity extends BaseActivity {
     //List of articles that are not hidden
     private ArrayList<Article> unHiddenArticles;
 
-    private ArrayList<String> searchHistory;
-
+    //true if app is tracking user search history
     private boolean tracking;
 
+    //sharedpreferences to store data
     private SharedPreferences sharedPreferences;
 
+    //Edit text for search text
     AutoCompleteTextView searchEditText;
 
+    //sharedprefs data item name
     private final String SEARCH = "SEARCH";
 
     //Listview that stores the articles
     ListView newsArticleList;
 
+    //database
     Database database;
 
+    //ImageView that contains the image retrieved from the asynctask
     ImageView imageView;
 
+    //Image retrieved from the asynctask
     Bitmap image;
 
+    //alert to show the artiticle information when clicked
     AlertDialog alert;
 
     Article clickedArticle;
@@ -216,17 +223,22 @@ public class FavouritesActivity extends BaseActivity {
         //initialize the articles
         allArticles = new ArrayList<>();
 
+        //initialize the database
         database = new Database(this);
 
+        //gets the default shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        //gets the search edit text
         searchEditText = findViewById(R.id.search_edit_text);
 
+        //update the auto complete data
         updateAutoComplete();
 
         //gets favourites articles from database
         allArticles = database.getFavouriteArticles();
 
+        //gets the tracking boolean data
         tracking = getTrackHistory();
 
         //update the articles
@@ -244,6 +256,7 @@ public class FavouritesActivity extends BaseActivity {
             String searchText = searchEditText.getText().toString();
 
             if (tracking) {
+                //if app is tracking search history, add the search history to the sharedpreferences
                 addSearchHistory(searchText);
             }
             //Calls the search articles method and passes it the search text
@@ -255,13 +268,13 @@ public class FavouritesActivity extends BaseActivity {
     }
 
     // help menu alert dialog
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         //if the help item was selected, display an alertdialogue with help information
-        if (item.getItemId() == R.id.help_settings) {
+        if (item.getItemId() == R.id.nav_help) {
             AlertDialog.Builder builder = new AlertDialog.Builder(FavouritesActivity.this);
             builder.setTitle("Help")
-                    .setMessage("Enter article and press search")
+                    .setMessage("This page contains your favourited BBC news articles. You can search for a specific article, and click the article for detailed information and an option to remove the article to favourites. You can also hide an article by long clicking it.")
                     .setPositiveButton("OK", null);
 
             //Show and create the alert dialogue
@@ -272,38 +285,57 @@ public class FavouritesActivity extends BaseActivity {
     }
 
     private boolean getTrackHistory () {
+        //gets and returns the track boolean from sharedpreferences
         return sharedPreferences.getBoolean("TRACK", false);
     }
 
+    //method to add a search history to the list of search history stored in shared preferences
     private void addSearchHistory (String search) {
+        //gets the current set of search history in the shared preferences
         Set<String> searchHistorySet = sharedPreferences.getStringSet(SEARCH, new HashSet<>());
 
+        //add the search text to the set
         searchHistorySet.add(search);
 
+        //get the editor
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        //replace the old set with the new one
         editor.putStringSet(SEARCH, searchHistorySet);
 
+        //apply changes
         editor.apply();
 
+        //update the auto complete information
         updateAutoComplete();
     }
 
+    //gets search history from shared preferences and converts it to an arraylist
     private ArrayList<String> getSearchHistory () {
 
+        //get the hashset from shared preferences
         HashSet<String> searchHistorySet = (HashSet<String>) sharedPreferences.getStringSet(SEARCH, new HashSet<>());
 
+        //return hashset as an arraylist<String>
         return new ArrayList<>(searchHistorySet);
     }
 
+    //updates the autocomplete information
     private void updateAutoComplete () {
+
+        //array adapter
         ArrayAdapter<String> adapter;
 
-        searchHistory = getSearchHistory();
+        //gets the current search history from shared preferences
+        ArrayList<String> searchHistory = getSearchHistory();
 
+        //initialize the adapter with the search history
         adapter = new ArrayAdapter<>(FavouritesActivity.this, android.R.layout.simple_dropdown_item_1line, searchHistory);
 
+        //sets the adapter to the auto complete edit text
         searchEditText.setAdapter(adapter);
+
+        //sets threshold to 0
         searchEditText.setThreshold(0);
     }
 
@@ -312,7 +344,7 @@ public class FavouritesActivity extends BaseActivity {
 
         //Gets the alert dialogue view
         LayoutInflater factory = LayoutInflater.from(FavouritesActivity.this);
-        final View view = factory.inflate(R.layout.alert_dialogue_image, null);
+        @SuppressLint("InflateParams") final View view = factory.inflate(R.layout.alert_dialogue_image, null);
 
         //sets the image to be shown
         imageView = view.findViewById(R.id.alert_image);

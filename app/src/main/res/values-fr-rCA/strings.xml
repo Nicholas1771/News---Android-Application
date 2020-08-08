@@ -24,15 +24,13 @@
     <string name="max_temp">Température maximale:</string>
     <string name="min_temp">" Température minimale:"</string>
     <string name="uv_rating">" Évaluation UV:"</string>
-    <string name="current_temperature">" \"Température actuelle: \""</string>
-    <string name="maximum_temperature">" \"Température maximale: \""</string>
-    <string name="minimum_temperature">" \"Température minimale:\""</string>
     <string name="alert_image">" image d'alerte"</string>
     <string name="description">" La description"</string>
     <string name="date">Date</string>
     <string name="link_to_article">" Lien vers l'article"</string>
-    <string name="current_weather_information">Current Weather Information</string>
-    <string name="view_search_history">View Search History</string>
-    <string name="track_history">Track History?</string>
-    <string name="your_search_history">Your search history</string>
+    <string name="current_weather_information">Informations météorologiques actuelles</string>
+    <string name="view_search_history">Afficher l\'historique de recherche</string>
+    <string name="track_history">Suivre l\'historique?</string>
+    <string name="your_search_history">Votre historique de recherche</string>
+    <string name="random_image">image aléatoire</string>
 </resources>

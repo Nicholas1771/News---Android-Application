@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,13 +14,13 @@ import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-//import android.widget.EditText;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -35,26 +34,33 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import java.nio.charset.StandardCharsets;
+
 public class ProfileActiviy extends BaseActivity {
 
+    //used when taking profile picture
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    //edit text for the profile information: first name, last name and email
     private EditText firstNameEditText;
     private EditText lastNameEditText;
     private EditText emailEditText;
-    private ImageButton pictureButton;
 
+    //strings used to access the sharedpreferences variables
     private final String FIRST_NAME = "FIRST_NAME";
     private final String LAST_NAME = "LAST_NAME";
     private final String EMAIL = "EMAIL";
     private final String IMAGE = "IMAGE";
 
+    //shared preferences
     private SharedPreferences sharedPreferences;
 
+    //imageview which contains the random image retrieved from the async task
     ImageView randomImageView;
 
+    //random image retrieved from the async task
     private Bitmap randomImage;
 
+    //profile picture image
     private Bitmap profileImage;
 
     @Override
@@ -62,34 +68,46 @@ public class ProfileActiviy extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_activiy);
 
+        //displays the toolbar and sets the title
         displayToolbar();
         setTitle("Profile");
 
+        //gets the image view
         randomImageView = findViewById(R.id.random_image);
 
+        //execute the async task to get the background image
         new BackgroundImageQuery().execute();
 
+        //gets the edit texts for the profile information
         firstNameEditText = findViewById(R.id.first_name_edit_text);
         lastNameEditText = findViewById(R.id.last_name_edit_text);
         emailEditText = findViewById(R.id.email_edit_text);
-        pictureButton = findViewById(R.id.picture_button);
 
+        //gets the picture button
+        ImageButton pictureButton = findViewById(R.id.picture_button);
+
+        //gets the default sharedpreferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        //gets the user information from the sharedpreferences
         firstNameEditText.setText(sharedPreferences.getString(FIRST_NAME, ""));
         lastNameEditText.setText(sharedPreferences.getString(LAST_NAME, ""));
         emailEditText.setText(sharedPreferences.getString(EMAIL, ""));
+
+        //gets the encoded string and sets its as the image bitmap for the profile picture
         pictureButton.setImageBitmap(getImageFromEncodedString(sharedPreferences.getString(IMAGE, "")));
 
+        //sets the picture button on click listener to open the take picture intent
         pictureButton.setOnClickListener(v -> dispatchTakePictureIntent());
 
+        //gets save button
         final Button saveButton = findViewById(R.id.save_button);
 
         // click listener for the Save button
         saveButton.setOnClickListener(v -> {
 
-            // toast message for save
-            String toastMessage = "Saved profile picture (Fake message - data will be saved in milestone 3)";
+            // toast message for saving data
+            String toastMessage = "Saved profile picture";
             int duration = Toast.LENGTH_SHORT;
             Toast.makeText(getApplicationContext(), toastMessage, duration).show();
 
@@ -98,19 +116,26 @@ public class ProfileActiviy extends BaseActivity {
             String lastName = lastNameEditText.getText().toString();
             String email = emailEditText.getText().toString();
 
+            //save the new profile data
             saveProfileData(firstName, lastName, email, getEncodedImage(profileImage));
-
-            //TO-DO save the data as shared preference
         });
     }
 
+    //this method saves the profile data taken as parameters
     private void saveProfileData (String firstName, String lastName, String email, String encodedImage) {
+
+        //gets the editor
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        //puts the new profile data into the shared preferences
         editor.putString(FIRST_NAME, firstName);
         editor.putString(LAST_NAME, lastName);
         editor.putString(EMAIL, email);
+
+        //puts the encoded image string
         editor.putString(IMAGE, encodedImage);
+
+        //apply the changes
         editor.apply();
     }
 
@@ -125,32 +150,52 @@ public class ProfileActiviy extends BaseActivity {
     }
 
     private void dispatchTakePictureIntent() {
+
+        //created the take picture intent
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        //starts the intent to take profile picture
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
+    //This method takes a bitmap image and encodes it to a String and returns the string
     //Source: https://stackoverflow.com/questions/17268519/how-to-store-bitmap-object-in-sharedpreferences-in-android
     private String getEncodedImage (Bitmap profileImage) {
+
+        //initialize the baso
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        //compress the profile image using to baos
         profileImage.compress(Bitmap.CompressFormat.PNG, 100, baos);
+
+        //convert the compressed image to a byte array
         byte[] b = baos.toByteArray();
 
+        //encode the byte array to a string and return it
         return Base64.encodeToString(b, Base64.DEFAULT);
     }
 
+    //This method gets the encoded string and converts it to a bitmap image and returns the image
     //Source: https://stackoverflow.com/questions/17268519/how-to-store-bitmap-object-in-sharedpreferences-in-android
     private Bitmap getImageFromEncodedString (String encodedImage) {
+
+        //decodes the string to a byte array
         byte[] imageAsBytes = Base64.decode(encodedImage.getBytes(), Base64.DEFAULT);
+
+        //convert the byte array to an image and returns it
         return BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        //gets the picture button
         final ImageButton pictureButton = findViewById(R.id.picture_button);
 
+        //gets the image from the extras and sets it the picture button bitmap image
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             assert extras != null;
@@ -261,14 +306,14 @@ public class ProfileActiviy extends BaseActivity {
 
 
     // help menu alert dialog
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
       // when user clicks help menu
 
-        if (item.getItemId() == R.id.help_settings) {
+        if (item.getItemId() == R.id.nav_help) {
             AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActiviy.this);
             builder.setTitle("Help")
-                    .setMessage("Enter your information and press save at the bottom")
+                    .setMessage("On this page you can save your name, email and profile picture.")
                     .setPositiveButton("OK", null);
 
 
