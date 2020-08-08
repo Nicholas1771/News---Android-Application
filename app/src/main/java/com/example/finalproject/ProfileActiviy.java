@@ -107,7 +107,7 @@ public class ProfileActiviy extends BaseActivity {
         saveButton.setOnClickListener(v -> {
 
             // toast message for saving data
-            String toastMessage = "Saved profile picture";
+            String toastMessage = "Saved profile information";
             int duration = Toast.LENGTH_SHORT;
             Toast.makeText(getApplicationContext(), toastMessage, duration).show();
 
