@@ -2,7 +2,6 @@ package com.example.finalproject;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -58,22 +57,23 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
 
         // switch statements for each menu item with intents
         switch (item.getItemId()) {
-            case R.id.nav_profile:
+
+            case R.id.nav_profile: //profile menu item
                 intent = new Intent(BaseActivity.this, ProfileActiviy.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
                 break;
-            case R.id.nav_news:
+            case R.id.nav_news: //news menu item
                 intent = new Intent(BaseActivity.this, NewsListActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
                 break;
-            case R.id.nav_favourites:
+            case R.id.nav_favourites: //favourites menu item
                 intent = new Intent(BaseActivity.this, FavouritesActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
                 break;
-            case R.id.nav_settings:
+            case R.id.nav_settings: //settings menu item
                 intent = new Intent(BaseActivity.this, SettingsActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
@@ -82,19 +82,23 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     }
 
     // method sets up Navigation Drawer
-
     void setUpNav () {
+
+        //gets the drawer layout
         drawerLayout = findViewById(R.id.drawer_layout);
 
+        //gets the toolbar
         toolbar = findViewById(R.id.toolbar);
 
-        //Sets up the toggle action bar
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
+        //get the navigation view
+        NavigationView navigationView = findViewById(R.id.navigation);
+        //hide the help menu item
+        navigationView.getMenu().findItem(R.id.nav_help).setVisible(false);
+        navigationView.setNavigationItemSelectedListener(this);
 
         //Sets up the drawer toggle
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
-        NavigationView navigationView = findViewById(R.id.navigation);
-        navigationView.setNavigationItemSelectedListener(this);
         toggle.setDrawerIndicatorEnabled(true);
         toggle.syncState();
     }
@@ -103,13 +107,16 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResource());
+
+        //set up the navigation
         setUpNav();
     }
 
+
     // setter for Title
-    private void setTitle(String title) {
+    public void setTitle(String title) {
         //changes title of toolbar
-        toolbar.setTitle(title + " V1.2");
+        super.setTitle(title + " V1.3");
     }
 
     protected abstract int getLayoutResource();
@@ -138,5 +145,4 @@ public abstract class BaseActivity extends AppCompatActivity implements Navigati
         menuItemSelected(item);
         return super.onOptionsItemSelected(item);
     }
-
 }

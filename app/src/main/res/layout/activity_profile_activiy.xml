@@ -96,7 +96,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/random_image"
                 android:layout_below="@id/email_edit_text"
-                android:layout_above="@id/save_button"/>
+                android:layout_above="@id/save_button"
+                android:contentDescription="@string/random_image" />
 
             <Button
                 android:id="@+id/save_button"

@@ -13,7 +13,7 @@ public class HistoryAdapter extends BaseAdapter {
         //This variable stores the Activity passed to the constructor
         private Activity context;
 
-        //This list stores all of the articles
+        //This list stores all of the search history
         private ArrayList<String> searchHistory;
 
         HistoryAdapter (Activity context, ArrayList<String> searchHistory) {
@@ -45,8 +45,8 @@ public class HistoryAdapter extends BaseAdapter {
                 newView = inflater.inflate(R.layout.search_history, parent, false);
             }
 
-            //references the news_article layout and its title text
-            //then sets the title text to the Article objects title in index position
+            //references the search text layout and its search text
+            //then sets the search text to the search history in index position
             TextView searchText = newView.findViewById(R.id.search_text);
             searchText.setText(searchHistory.get(position));
 
