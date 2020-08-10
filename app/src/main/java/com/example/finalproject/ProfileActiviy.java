@@ -94,8 +94,11 @@ public class ProfileActiviy extends BaseActivity {
         lastNameEditText.setText(sharedPreferences.getString(LAST_NAME, ""));
         emailEditText.setText(sharedPreferences.getString(EMAIL, ""));
 
+        //get the profile image bitmap
+        profileImage = getImageFromEncodedString(sharedPreferences.getString(IMAGE, ""));
+
         //gets the encoded string and sets its as the image bitmap for the profile picture
-        pictureButton.setImageBitmap(getImageFromEncodedString(sharedPreferences.getString(IMAGE, "")));
+        pictureButton.setImageBitmap(profileImage);
 
         //sets the picture button on click listener to open the take picture intent
         pictureButton.setOnClickListener(v -> dispatchTakePictureIntent());

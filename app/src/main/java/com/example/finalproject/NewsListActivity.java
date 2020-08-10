@@ -46,9 +46,6 @@ public class NewsListActivity extends BaseActivity {
     //database
     private Database database;
 
-    //search history
-    private ArrayList<String> searchHistory;
-
     //shared preferences
     private SharedPreferences sharedPreferences;
 
@@ -245,6 +242,7 @@ public class NewsListActivity extends BaseActivity {
         ArrayAdapter<String> adapter;
 
         //gets the current search history from shared preferences
+        //search history
         ArrayList<String> searchHistory = getSearchHistory();
 
         //initialize the adapter with the search history
